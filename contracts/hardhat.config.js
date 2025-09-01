@@ -1,6 +1,4 @@
-// require("@nomiclabs/hardhat-waffle")
 require("@nomicfoundation/hardhat-chai-matchers")
-require("@nomiclabs/hardhat-etherscan")
 require("hardhat-deploy")
 require("solidity-coverage")
 require("hardhat-gas-reporter")
@@ -13,7 +11,18 @@ const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
 
 module.exports = {
     solidity: {
-        compilers: [{ version: "0.8.20" }],
+        compilers: [
+            {
+                version: "0.8.20",
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200,
+                    },
+                    viaIR: true,
+                },
+            },
+        ],
     },
     defaultNetwork: "hardhat",
     networks: {
