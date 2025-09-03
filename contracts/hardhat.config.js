@@ -8,7 +8,8 @@ require("dotenv").config()
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL
 const SOMNIA_TESTNET_RPC_URL = process.env.SOMNIA_TESTNET_RPC_URL
-const PRIVATE_KEY = process.env.PRIVATE_KEY
+const SEPOLIA_PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY
+const SOMNIA_PRIVATE_KEY = process.env.SOMNIA_PRIVATE_KEY
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
 
 module.exports = {
@@ -30,22 +31,22 @@ module.exports = {
     networks: {
         sepolia: {
             url: SEPOLIA_RPC_URL,
-            accounts: [PRIVATE_KEY],
+            accounts: [SEPOLIA_PRIVATE_KEY],
             chainId: 11155111,
             blockConfirmations: 6,
         },
         somniaTestnet: {
             url: SOMNIA_TESTNET_RPC_URL || "https://dream-rpc.somnia.network",
-            accounts: [PRIVATE_KEY],
-            chainId: 50311,
+            accounts: [SOMNIA_PRIVATE_KEY],
+            chainId: 50312,
             blockConfirmations: 3,
             gasPrice: 1000000000, // 1 gwei
             timeout: 60000,
         },
         somniaDevnet: {
             url: "https://dream-rpc.somnia.network",
-            accounts: [PRIVATE_KEY],
-            chainId: 50311,
+            accounts: [SOMNIA_PRIVATE_KEY],
+            chainId: 50312,
             blockConfirmations: 1,
             gasPrice: 1000000000, // 1 gwei
             timeout: 60000,

@@ -4,7 +4,7 @@ const networkConfig = {
     11155111: {
         name: "sepolia",
     },
-    50311: {
+    50312: {
         name: "somniaTestnet",
         blockConfirmations: 3,
     },
