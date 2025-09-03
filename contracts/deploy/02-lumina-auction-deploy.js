@@ -8,10 +8,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const chainId = network.config.chainId
 
     log("----------------------------------------------------")
-    log("🚀 Deploying LuminaAuction...")
-    log("📍 Network:", network.name)
-    log("🔗 Chain ID:", chainId)
-    log("👤 Deployer:", deployer)
+    log("Deploying LuminaAuction...")
+    log("Network:", network.name)
+    log("Chain ID:", chainId)
+    log("Deployer:", deployer)
 
     // Get the previously deployed LuminaNFT contract
     const luminaNFT = await get("LuminaNFT")
@@ -26,11 +26,10 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         waitConfirmations: networkConfig[chainId]?.blockConfirmations || 1,
     })
 
-    log(`✅ LuminaAuction deployed to: ${luminaAuction.address}`)
+    log(`LuminaAuction deployed to: ${luminaAuction.address}`)
 
-    // Verify the deployment
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
-        log("🔍 Verifying contract...")
+        log("Verifying contract...")
         await verify(luminaAuction.address, args)
     }
 
