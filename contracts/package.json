@@ -25,6 +25,7 @@
         "@chainlink/contracts": "^1.4.0",
         "@nomicfoundation/hardhat-chai-matchers": "^2.0.9",
         "@nomicfoundation/hardhat-ethers": "^3.0.2",
+        "@nomicfoundation/hardhat-network-helpers": "^1.1.0",
         "@openzeppelin/contracts": "^5.4.0",
         "chai": "^4.3.10",
         "dotenv": "^17.1.0",
