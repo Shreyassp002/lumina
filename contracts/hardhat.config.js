@@ -1,11 +1,13 @@
 require("@nomicfoundation/hardhat-chai-matchers")
 require("hardhat-deploy")
+// require("@nomicfoundation/hardhat-verify") // Will add when needed
 require("solidity-coverage")
 require("hardhat-gas-reporter")
 require("hardhat-contract-sizer")
 require("dotenv").config()
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL
+const SOMNIA_TESTNET_RPC_URL = process.env.SOMNIA_TESTNET_RPC_URL
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
 
@@ -31,6 +33,22 @@ module.exports = {
             accounts: [PRIVATE_KEY],
             chainId: 11155111,
             blockConfirmations: 6,
+        },
+        somniaTestnet: {
+            url: SOMNIA_TESTNET_RPC_URL || "https://dream-rpc.somnia.network",
+            accounts: [PRIVATE_KEY],
+            chainId: 50311,
+            blockConfirmations: 3,
+            gasPrice: 1000000000, // 1 gwei
+            timeout: 60000,
+        },
+        somniaDevnet: {
+            url: "https://dream-rpc.somnia.network",
+            accounts: [PRIVATE_KEY],
+            chainId: 50311,
+            blockConfirmations: 1,
+            gasPrice: 1000000000, // 1 gwei
+            timeout: 60000,
         },
         hardhat: {
             chainId: 31337,
