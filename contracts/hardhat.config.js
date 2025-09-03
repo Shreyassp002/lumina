@@ -40,15 +40,7 @@ module.exports = {
             accounts: [SOMNIA_PRIVATE_KEY],
             chainId: 50312,
             blockConfirmations: 3,
-            gasPrice: 1000000000, // 1 gwei
-            timeout: 60000,
-        },
-        somniaDevnet: {
-            url: "https://dream-rpc.somnia.network",
-            accounts: [SOMNIA_PRIVATE_KEY],
-            chainId: 50312,
-            blockConfirmations: 1,
-            gasPrice: 1000000000, // 1 gwei
+            // Remove fixed gasPrice to let network determine it automatically
             timeout: 60000,
         },
         hardhat: {
