@@ -1,6 +1,26 @@
 {
     "name": "lumina-contracts",
     "version": "1.0.0",
+    "scripts": {
+        "compile": "hardhat compile",
+        "test": "hardhat test",
+        "deploy": "hardhat deploy",
+        "deploy:local": "hardhat deploy --network localhost",
+        "deploy:sepolia": "hardhat deploy --network sepolia",
+        "deploy:somnia": "hardhat deploy --network somniaTestnet",
+        "deploy:somnia-devnet": "hardhat deploy --network somniaDevnet",
+        "deploy:nft": "hardhat deploy --tags nft",
+        "deploy:auction": "hardhat deploy --tags auction",
+        "deploy:marketplace": "hardhat deploy --tags marketplace",
+        "deploy:setup": "hardhat deploy --tags setup",
+        "test:deployment:local": "hardhat run scripts/test-deployment.js --network localhost",
+        "test:deployment:sepolia": "hardhat run scripts/test-deployment.js --network sepolia",
+        "test:deployment:somnia": "hardhat run scripts/test-deployment.js --network somniaTestnet",
+        "size": "hardhat size-contracts",
+        "coverage": "hardhat coverage",
+        "lint": "solhint 'contracts/**/*.sol'",
+        "format": "prettier --write ."
+    },
     "devDependencies": {
         "@chainlink/contracts": "^1.4.0",
         "@nomicfoundation/hardhat-chai-matchers": "^2.0.9",
