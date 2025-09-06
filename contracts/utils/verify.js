@@ -19,7 +19,7 @@ const verify = async (contractAddress, args) => {
         } else {
             console.log("❌ Verification failed:", e.message)
         }
-    }
+    }   
 }
 
 module.exports = { verify }

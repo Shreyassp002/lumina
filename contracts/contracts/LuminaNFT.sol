@@ -49,7 +49,7 @@ contract LuminaNFT is ERC721, ERC721Royalty, Ownable, Pausable, ReentrancyGuard 
         address indexed creator,
         string metadataURI,
         string category
-    );
+    ); 
     event CreatorVerified(address indexed creator);
     event CreatorProfileUpdated(address indexed creator);
     event RoyaltyUpdated(uint256 indexed tokenId, uint256 royaltyBps);

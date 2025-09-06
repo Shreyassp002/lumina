@@ -11,7 +11,7 @@ describe("LuminaNFT", function () {
         const accounts = await ethers.getSigners()
         deployer = accounts[0]
         user1 = accounts[1]
-        user2 = accounts[2]
+        user2 = accounts[2] 
         user3 = accounts[3]
 
         // Deploy contracts

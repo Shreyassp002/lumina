@@ -68,7 +68,7 @@ describe("LuminaMarketplace", function () {
         it("Should fail to list if not NFT owner", async function () {
             const { marketplace, buyer } = await loadFixture(deployMarketplaceFixture)
 
-            const price = ethers.parseEther("1.0")
+            const price = ethers.parseEther("1.0") 
 
             await expect(marketplace.connect(buyer).listItem(1, price)).to.be.revertedWith(
                 "Not NFT owner",
