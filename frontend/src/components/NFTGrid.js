@@ -1,72 +1,46 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
-import { LUMINA_MARKETPLACE_ABI, LUMINA_MARKETPLACE_ADDRESS } from '../../abi/luminaMarketplace';
-import { LUMINA_NFT_ABI, LUMINA_NFT_ADDRESS } from '../../abi/luminaNft';
+import { useState } from 'react';
+import { useAccount } from 'wagmi';
+import { useActiveListings } from '../hooks/useMarketplace';
 import NFTCard from './NFTCard';
 import { Loader2 } from 'lucide-react';
 
 export default function NFTGrid({ searchTerm, filters }) {
   const { address } = useAccount();
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  // Fetch active listings from marketplace
-  const { data: activeListings, refetch } = useReadContract({
-    address: LUMINA_MARKETPLACE_ADDRESS,
-    abi: LUMINA_MARKETPLACE_ABI,
-    functionName: 'getActiveListings',
-    args: [page * 20, 20], // offset, limit
-  });
-
-  useEffect(() => {
-    if (activeListings) {
-      const [listingData, tokenIds] = activeListings;
-      
-      if (listingData && tokenIds) {
-        const newListings = listingData.map((listing, index) => ({
-          ...listing,
-          tokenId: tokenIds[index],
-          listingId: index + (page * 20)
-        }));
-        
-        if (page === 0) {
-          setListings(newListings);
-        } else {
-          setListings(prev => [...prev, ...newListings]);
-        }
-        
-        setHasMore(newListings.length === 20);
-      }
-      setLoading(false);
-    }
-  }, [activeListings, page]);
+  // Use custom hook to fetch active listings
+  const { listings: activeListings, isLoading, refetch } = useActiveListings(page * 20, 20);
 
   const loadMore = () => {
-    if (!loading && hasMore) {
+    if (!isLoading && hasMore) {
       setPage(prev => prev + 1);
     }
   };
 
+  // Process listings data
+  const processedListings = activeListings ? (() => {
+    const [listingData, tokenIds] = activeListings;
+    if (listingData && tokenIds) {
+      return listingData.map((listing, index) => ({
+        ...listing,
+        tokenId: tokenIds[index],
+        listingId: index + (page * 20)
+      }));
+    }
+    return [];
+  })() : [];
+
   // Filter listings based on search and filters
-  const filteredListings = listings.filter(listing => {
+  const filteredListings = processedListings.filter(listing => {
     // Search filter
     if (searchTerm) {
-      // This would need to be enhanced with actual metadata fetching
-      // For now, we'll just filter by token ID
       const searchLower = searchTerm.toLowerCase();
       if (!listing.tokenId.toString().includes(searchLower)) {
         return false;
       }
-    }
-
-    // Category filter
-    if (filters.category !== 'all') {
-      // This would need to be enhanced with actual category data
-      // For now, we'll skip this filter
     }
 
     // Price range filter
@@ -77,7 +51,7 @@ export default function NFTGrid({ searchTerm, filters }) {
     return true;
   });
 
-  if (loading && page === 0) {
+  if (isLoading && page === 0) {
     return (
       <div className="flex justify-center items-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
@@ -85,7 +59,7 @@ export default function NFTGrid({ searchTerm, filters }) {
     );
   }
 
-  if (filteredListings.length === 0 && !loading) {
+  if (filteredListings.length === 0 && !isLoading) {
     return (
       <div className="text-center py-12">
         <div className="text-gray-500 text-lg mb-4">No NFTs found</div>
@@ -115,10 +89,10 @@ export default function NFTGrid({ searchTerm, filters }) {
         <div className="text-center mt-12">
           <button
             onClick={loadMore}
-            disabled={loading}
+            disabled={isLoading}
             className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? (
+            {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin inline mr-2" />
                 Loading...

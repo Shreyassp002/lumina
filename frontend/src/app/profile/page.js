@@ -1,66 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
-import { LUMINA_NFT_ABI, LUMINA_NFT_ADDRESS } from '../../../abi/luminaNft';
+import { useState } from 'react';
+import { useAccount } from 'wagmi';
 import Layout from '../../components/Layout';
-import { User, Package, Heart, TrendingUp, Settings, Edit3 } from 'lucide-react';
+import { useUserStats } from '../../hooks/useUserStats';
+import { useCreatorProfile } from '../../hooks/useNFT';
+import { User, Package, Heart, TrendingUp, Settings, Edit3, Loader2 } from 'lucide-react';
 
 export default function ProfilePage() {
   const { address } = useAccount();
   const [activeTab, setActiveTab] = useState('owned');
-  const [userNFTs, setUserNFTs] = useState([]);
-  const [userStats, setUserStats] = useState({
-    owned: 0,
-    created: 0,
-    sold: 0,
-    totalVolume: 0
-  });
-
-  // Fetch user's NFT balance
-  const { data: balance } = useReadContract({
-    address: LUMINA_NFT_ADDRESS,
-    abi: LUMINA_NFT_ABI,
-    functionName: 'balanceOf',
-    args: address ? [address] : undefined,
-  });
-
-  useEffect(() => {
-    if (address) {
-      // In a real app, you would fetch user's NFTs and stats from the contracts
-      // For now, we'll use mock data
-      setUserNFTs([
-        {
-          tokenId: 1,
-          name: 'Digital Art #1',
-          image: 'https://picsum.photos/400/400?random=1',
-          price: '1.5',
-          status: 'owned'
-        },
-        {
-          tokenId: 2,
-          name: 'Digital Art #2',
-          image: 'https://picsum.photos/400/400?random=2',
-          price: '2.0',
-          status: 'listed'
-        },
-        {
-          tokenId: 3,
-          name: 'Digital Art #3',
-          image: 'https://picsum.photos/400/400?random=3',
-          price: '0.8',
-          status: 'auction'
-        }
-      ]);
-
-      setUserStats({
-        owned: 3,
-        created: 5,
-        sold: 2,
-        totalVolume: 4.5
-      });
-    }
-  }, [address]);
+  
+  // Use custom hooks to get real contract data
+  const { stats, ownedNFTs, userListings, userAuctions, isLoading } = useUserStats(address);
+  const { data: creatorProfile, isLoading: profileLoading } = useCreatorProfile(address);
 
   const tabs = [
     { key: 'owned', label: 'Owned', icon: Package },
@@ -101,19 +54,19 @@ export default function ProfilePage() {
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
                   <h1 className="text-2xl font-bold text-gray-900">
-                    {address.slice(0, 6)}...{address.slice(-4)}
+                    {creatorProfile?.name || `${address.slice(0, 6)}...${address.slice(-4)}`}
                   </h1>
                   <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                     <Edit3 className="w-4 h-4" />
                   </button>
                 </div>
                 <p className="text-gray-600 mb-4">
-                  Digital artist and NFT collector
+                  {creatorProfile?.bio || 'Digital artist and NFT collector'}
                 </p>
                 <div className="flex items-center space-x-6 text-sm text-gray-500">
                   <span>Joined Dec 2024</span>
                   <span>•</span>
-                  <span>Member</span>
+                  <span>{creatorProfile?.verified ? 'Verified Creator' : 'Member'}</span>
                 </div>
               </div>
 
@@ -128,55 +81,61 @@ export default function ProfilePage() {
 
         {/* Stats */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
-                  <Package className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">{userStats.owned}</div>
-                  <div className="text-gray-600">Owned</div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
+                    <Package className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">{stats.owned}</div>
+                    <div className="text-gray-600">Owned</div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-4">
-                  <User className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">{userStats.created}</div>
-                  <div className="text-gray-600">Created</div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-4">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">{stats.created}</div>
+                    <div className="text-gray-600">Created</div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-4">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">{userStats.sold}</div>
-                  <div className="text-gray-600">Sold</div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-4">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">{stats.sold}</div>
+                    <div className="text-gray-600">Sold</div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
-                  <TrendingUp className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-gray-900">{userStats.totalVolume} ETH</div>
-                  <div className="text-gray-600">Volume</div>
+              <div className="bg-white p-6 rounded-xl shadow-sm">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">{stats.totalEarnings} ETH</div>
+                    <div className="text-gray-600">Earnings</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Tabs */}
           <div className="bg-white rounded-xl shadow-sm">
@@ -207,7 +166,11 @@ export default function ProfilePage() {
               {activeTab === 'owned' && (
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Your NFTs</h3>
-                  {userNFTs.length === 0 ? (
+                  {isLoading ? (
+                    <div className="flex justify-center items-center py-12">
+                      <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+                    </div>
+                  ) : ownedNFTs.length === 0 ? (
                     <div className="text-center py-12">
                       <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                       <h4 className="text-lg font-medium text-gray-900 mb-2">No NFTs owned</h4>
@@ -215,22 +178,20 @@ export default function ProfilePage() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {userNFTs.map((nft) => (
+                      {ownedNFTs.map((nft) => (
                         <div key={nft.tokenId} className="bg-gray-50 rounded-lg overflow-hidden">
                           <img
-                            src={nft.image}
-                            alt={nft.name}
+                            src={`https://picsum.photos/400/400?random=${nft.tokenId}`}
+                            alt={`NFT #${nft.tokenId}`}
                             className="w-full h-48 object-cover"
                           />
                           <div className="p-4">
-                            <h4 className="font-semibold text-gray-900 mb-1">{nft.name}</h4>
-                            <p className="text-sm text-gray-600 mb-2">{nft.price} ETH</p>
-                            <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                              nft.status === 'owned' ? 'bg-green-100 text-green-800' :
-                              nft.status === 'listed' ? 'bg-blue-100 text-blue-800' :
-                              'bg-purple-100 text-purple-800'
-                            }`}>
-                              {nft.status}
+                            <h4 className="font-semibold text-gray-900 mb-1">NFT #{nft.tokenId}</h4>
+                            <p className="text-sm text-gray-600 mb-2">
+                              {nft.tokenData?.category || 'Art'}
+                            </p>
+                            <div className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Owned
                             </div>
                           </div>
                         </div>

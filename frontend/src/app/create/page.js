@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { LUMINA_NFT_ABI, LUMINA_NFT_ADDRESS } from '../../../abi/luminaNft';
+import { useAccount } from 'wagmi';
+import { useMintNFT } from '../../hooks/useNFT';
 import Layout from '../../components/Layout';
 import { Upload, Image as ImageIcon, FileText, DollarSign, Tag, Sparkles } from 'lucide-react';
 
@@ -17,13 +17,9 @@ export default function CreatePage() {
     imagePreview: null
   });
   const [isUploading, setIsUploading] = useState(false);
-  const [isMinting, setIsMinting] = useState(false);
 
-  const { writeContract, data: hash } = useWriteContract();
-
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash,
-  });
+  // Use custom hook for minting
+  const { mintNFT, isPending: isMinting, isConfirming, isConfirmed } = useMintNFT();
 
   const categories = [
     { value: 'art', label: 'Art' },
@@ -73,25 +69,16 @@ export default function CreatePage() {
       return;
     }
 
-    setIsMinting(true);
     try {
       // In a real app, you would upload to IPFS first
       // For now, we'll use a placeholder metadata URI
       const metadataURI = `https://api.lumina.com/metadata/${Date.now()}`;
       const royaltyBps = Math.floor(formData.royalty * 100); // Convert to basis points
 
-      await writeContract({
-        address: LUMINA_NFT_ADDRESS,
-        abi: LUMINA_NFT_ABI,
-        functionName: 'mintNFT',
-        args: [metadataURI, royaltyBps, formData.category],
-        value: 1000000000000000n, // 0.001 ETH mint fee
-      });
+      await mintNFT(metadataURI, royaltyBps, formData.category);
     } catch (error) {
       console.error('Minting failed:', error);
       alert('Minting failed. Please try again.');
-    } finally {
-      setIsMinting(false);
     }
   };
 

@@ -1,80 +1,34 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { LUMINA_NFT_ABI, LUMINA_NFT_ADDRESS } from '../../abi/luminaNft';
-import { LUMINA_MARKETPLACE_ABI, LUMINA_MARKETPLACE_ADDRESS } from '../../abi/luminaMarketplace';
+import { useAccount } from 'wagmi';
+import { useNFTData } from '../hooks/useNFT';
+import { useBuyNFT } from '../hooks/useMarketplace';
 import { formatEther } from 'viem';
 import Link from 'next/link';
 import { Heart, ShoppingCart, ExternalLink } from 'lucide-react';
 
 export default function NFTCard({ tokenId, price, seller, listingId }) {
   const { address } = useAccount();
-  const [nftData, setNftData] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
-  const [isPurchasing, setIsPurchasing] = useState(false);
-
-  // Fetch NFT metadata
-  const { data: tokenURI } = useReadContract({
-    address: LUMINA_NFT_ADDRESS,
-    abi: LUMINA_NFT_ABI,
-    functionName: 'tokenURI',
-    args: [tokenId],
-  });
-
-  // Fetch token data
-  const { data: tokenData } = useReadContract({
-    address: LUMINA_NFT_ADDRESS,
-    abi: LUMINA_NFT_ABI,
-    functionName: 'tokenData',
-    args: [tokenId],
-  });
-
-  // Purchase function
-  const { writeContract, data: hash } = useWriteContract();
-
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash,
-  });
-
-  useEffect(() => {
-    if (tokenURI) {
-      // In a real app, you would fetch the metadata from IPFS
-      // For now, we'll use placeholder data
-      setNftData({
-        name: `NFT #${tokenId}`,
-        description: 'A unique digital collectible',
-        image: `https://picsum.photos/400/400?random=${tokenId}`,
-        attributes: [
-          { trait_type: 'Rarity', value: 'Common' },
-          { trait_type: 'Category', value: 'Art' }
-        ]
-      });
-    }
-  }, [tokenURI, tokenId]);
+  
+  // Use custom hooks for contract interactions
+  const { tokenURI, tokenData, owner, isLoading: nftLoading } = useNFTData(tokenId);
+  const { buyNFT, isPending: isPurchasing, isConfirming, isConfirmed } = useBuyNFT();
 
   const handlePurchase = async () => {
     if (!address) return;
     
-    setIsPurchasing(true);
     try {
-      await writeContract({
-        address: LUMINA_MARKETPLACE_ADDRESS,
-        abi: LUMINA_MARKETPLACE_ABI,
-        functionName: 'buyItem',
-        args: [listingId],
-        value: price,
-      });
+      await buyNFT(listingId, price);
     } catch (error) {
       console.error('Purchase failed:', error);
-    } finally {
-      setIsPurchasing(false);
     }
   };
 
   const isOwner = address?.toLowerCase() === seller?.toLowerCase();
 
-  if (!nftData) {
+  if (nftLoading) {
     return (
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
         <div className="aspect-square bg-gray-200"></div>
@@ -91,8 +45,8 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
       {/* Image */}
       <div className="aspect-square relative overflow-hidden">
         <img
-          src={nftData.image}
-          alt={nftData.name}
+          src={`https://picsum.photos/400/400?random=${tokenId}`}
+          alt={`NFT #${tokenId}`}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute top-3 right-3">
@@ -118,7 +72,7 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
       <div className="p-4">
         <div className="flex items-start justify-between mb-2">
           <h3 className="font-semibold text-gray-900 truncate flex-1">
-            {nftData.name}
+            NFT #{tokenId}
           </h3>
           <Link
             href={`/nft/${tokenId}`}
@@ -129,7 +83,7 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
         </div>
 
         <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-          {nftData.description}
+          {tokenData?.category || 'Digital Art'}
         </p>
 
         {/* Creator */}
