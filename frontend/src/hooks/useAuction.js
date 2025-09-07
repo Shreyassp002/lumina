@@ -1,6 +1,6 @@
 'use client';
 
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
 import { LUMINA_AUCTION_ABI, LUMINA_AUCTION_ADDRESS } from '../../abi/luminaAuction';
 import { useState, useEffect } from 'react';
 
@@ -35,6 +35,7 @@ export function useAuctionData(auctionId) {
 export function useUserAuctions(address) {
   const [userAuctions, setUserAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const publicClient = usePublicClient();
 
   useEffect(() => {
     if (!address) {
@@ -45,40 +46,51 @@ export function useUserAuctions(address) {
     const fetchUserAuctions = async () => {
       setIsLoading(true);
       try {
-        // Get auction count first
-        const { data: auctionCount } = await fetch('/api/contracts/getAuctionCount', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            contractAddress: LUMINA_AUCTION_ADDRESS
-          }),
+        const currentAuctionId = await publicClient.readContract({
+          address: LUMINA_AUCTION_ADDRESS,
+          abi: LUMINA_AUCTION_ABI,
+          functionName: 'getCurrentAuctionId',
+          args: [],
         });
 
-        if (auctionCount) {
-          const auctions = [];
-          for (let i = 1; i <= auctionCount; i++) {
-            try {
-              const { data: auction } = await fetch('/api/contracts/getAuction', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  contractAddress: LUMINA_AUCTION_ADDRESS,
-                  auctionId: i
-                }),
-              });
-
-              if (auction && auction.seller.toLowerCase() === address.toLowerCase()) {
-                auctions.push({
-                  id: i,
-                  ...auction,
-                });
-              }
-            } catch (error) {
-              console.error(`Error fetching auction ${i}:`, error);
-            }
-          }
-          setUserAuctions(auctions);
+        const count = Number(currentAuctionId || 0);
+        if (!count) {
+          setUserAuctions([]);
+          return;
         }
+
+        const ids = Array.from({ length: count }, (_, i) => i + 1);
+        const auctions = await Promise.all(
+          ids.map((id) =>
+            publicClient
+              .readContract({ address: LUMINA_AUCTION_ADDRESS, abi: LUMINA_AUCTION_ABI, functionName: 'auctions', args: [id] })
+              .then((a) => ({ id, a }))
+              .catch(() => null)
+          )
+        );
+
+        const user = address.toLowerCase();
+        const filtered = auctions
+          .filter(Boolean)
+          .map((entry) => {
+            const a = entry.a;
+            return {
+              id: entry.id,
+              tokenId: Number(a.tokenId),
+              seller: a.seller,
+              startPrice: a.startPrice,
+              currentBid: a.currentBid,
+              currentBidder: a.currentBidder,
+              endTime: Number(a.endTime) * 1000,
+              minIncrement: a.minIncrement,
+              buyNowPrice: a.buyNowPrice && a.buyNowPrice > 0n ? a.buyNowPrice : null,
+              active: a.active,
+              settled: a.settled,
+            };
+          })
+          .filter((x) => x.seller?.toLowerCase() === user);
+
+        setUserAuctions(filtered);
       } catch (error) {
         console.error('Error fetching user auctions:', error);
       } finally {
@@ -87,12 +99,89 @@ export function useUserAuctions(address) {
     };
 
     fetchUserAuctions();
-  }, [address]);
+  }, [address, publicClient]);
 
   return {
     auctions: userAuctions,
     isLoading,
   };
+}
+
+// Hook to get all active auctions
+export function useAllAuctions() {
+  const [auctions, setAuctions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const publicClient = usePublicClient();
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setIsLoading(true);
+        const currentAuctionId = await publicClient.readContract({
+          address: LUMINA_AUCTION_ADDRESS,
+          abi: LUMINA_AUCTION_ABI,
+          functionName: 'getCurrentAuctionId',
+          args: [],
+        });
+
+        const count = Number(currentAuctionId || 0);
+        if (!count) {
+          setAuctions([]);
+          return;
+        }
+
+        const ids = Array.from({ length: count }, (_, i) => i + 1);
+        const rawAuctions = await Promise.all(
+          ids.map((id) =>
+            publicClient
+              .readContract({ address: LUMINA_AUCTION_ADDRESS, abi: LUMINA_AUCTION_ABI, functionName: 'auctions', args: [id] })
+              .then((a) => ({ id, a }))
+              .catch(() => null)
+          )
+        );
+
+        const bidsCounts = await Promise.all(
+          ids.map((id) =>
+            publicClient
+              .readContract({ address: LUMINA_AUCTION_ADDRESS, abi: LUMINA_AUCTION_ABI, functionName: 'getAuctionBids', args: [id] })
+              .then((b) => (Array.isArray(b) ? b.length : 0))
+              .catch(() => 0)
+          )
+        );
+
+        const auctionsParsed = rawAuctions
+          .filter(Boolean)
+          .map((entry, idx) => {
+            const a = entry.a;
+            return {
+              id: entry.id,
+              tokenId: Number(a.tokenId),
+              seller: a.seller,
+              startPrice: a.startPrice,
+              currentBid: a.currentBid,
+              currentBidder: a.currentBidder,
+              endTime: Number(a.endTime) * 1000,
+              minIncrement: a.minIncrement,
+              buyNowPrice: a.buyNowPrice && a.buyNowPrice > 0n ? a.buyNowPrice : null,
+              status: a.active ? 'active' : a.settled ? 'ended' : 'inactive',
+              bidCount: bidsCounts[idx] || 0,
+            };
+          })
+          .filter((x) => x.status !== 'inactive');
+
+        setAuctions(auctionsParsed);
+      } catch (e) {
+        console.error('Failed loading auctions', e);
+        setAuctions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    load();
+  }, [publicClient]);
+
+  return { auctions, isLoading };
 }
 
 // Hook to create auction
