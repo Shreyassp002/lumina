@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
-import { LUMINA_AUCTION_ABI, LUMINA_AUCTION_ADDRESS } from '../../../abi/luminaAuction';
+import { useAccount } from 'wagmi';
+import { useAllAuctions } from '../../hooks/useAuction';
 import Layout from '../../components/Layout';
 import AuctionCard from '../../components/AuctionCard';
 import { Gavel, Clock, TrendingUp } from 'lucide-react';
@@ -12,69 +12,17 @@ export default function AuctionsPage() {
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, active, ending-soon, ended
-
-  // Fetch auctions from the contract
-  const { data: auctionCount } = useReadContract({
-    address: LUMINA_AUCTION_ADDRESS,
-    abi: LUMINA_AUCTION_ABI,
-    functionName: 'getAuctionCount',
-  });
+  const { auctions: allAuctions, isLoading } = useAllAuctions();
 
   useEffect(() => {
-    if (auctionCount) {
-      // In a real app, you would fetch auction data from the contract
-      // For now, we'll use mock data
-      const mockAuctions = [
-        {
-          id: 1,
-          tokenId: 1,
-          seller: '0x1234...5678',
-          startPrice: '1000000000000000000', // 1 ETH
-          currentBid: '1500000000000000000', // 1.5 ETH
-          currentBidder: '0x8765...4321',
-          endTime: Date.now() + 2 * 60 * 60 * 1000, // 2 hours from now
-          minIncrement: '100000000000000000', // 0.1 ETH
-          buyNowPrice: '5000000000000000000', // 5 ETH
-          status: 'active',
-          bidCount: 3
-        },
-        {
-          id: 2,
-          tokenId: 2,
-          seller: '0x1111...2222',
-          startPrice: '2000000000000000000', // 2 ETH
-          currentBid: '2000000000000000000', // 2 ETH
-          currentBidder: null,
-          endTime: Date.now() + 30 * 60 * 1000, // 30 minutes from now
-          minIncrement: '200000000000000000', // 0.2 ETH
-          buyNowPrice: null,
-          status: 'active',
-          bidCount: 0
-        },
-        {
-          id: 3,
-          tokenId: 3,
-          seller: '0x3333...4444',
-          startPrice: '500000000000000000', // 0.5 ETH
-          currentBid: '800000000000000000', // 0.8 ETH
-          currentBidder: '0x5555...6666',
-          endTime: Date.now() - 60 * 60 * 1000, // 1 hour ago
-          minIncrement: '50000000000000000', // 0.05 ETH
-          buyNowPrice: null,
-          status: 'ended',
-          bidCount: 5
-        }
-      ];
-      
-      setAuctions(mockAuctions);
-      setLoading(false);
-    }
-  }, [auctionCount]);
+    setLoading(isLoading);
+    setAuctions(allAuctions || []);
+  }, [allAuctions, isLoading]);
 
   const filteredAuctions = auctions.filter(auction => {
     const now = Date.now();
     const timeLeft = auction.endTime - now;
-    
+
     switch (filter) {
       case 'active':
         return auction.status === 'active' && timeLeft > 0;
@@ -175,11 +123,10 @@ export default function AuctionsPage() {
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  filter === tab.key
-                    ? 'bg-white text-purple-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${filter === tab.key
+                  ? 'bg-white text-purple-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
                 {tab.label}
               </button>
@@ -192,7 +139,7 @@ export default function AuctionsPage() {
               <Gavel className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No auctions found</h3>
               <p className="text-gray-600">
-                {filter === 'all' 
+                {filter === 'all'
                   ? 'No auctions are currently available'
                   : `No ${filter.replace('-', ' ')} auctions found`
                 }

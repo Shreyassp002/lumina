@@ -1,15 +1,16 @@
 'use client';
 
-import { useUserNFTs } from './useNFT';
+import { useUserNFTs, useUserCreatedNFTs } from './useNFT';
 import { useUserListings } from './useMarketplace';
 import { useUserAuctions } from './useAuction';
 import { useState, useEffect } from 'react';
 
 export function useUserStats(address) {
   const { nfts: ownedNFTs, balance, isLoading: nftsLoading } = useUserNFTs(address);
+  const { nfts: createdNFTs, isLoading: createdLoading } = useUserCreatedNFTs(address);
   const { listings: userListings, isLoading: listingsLoading } = useUserListings(address);
   const { auctions: userAuctions, isLoading: auctionsLoading } = useUserAuctions(address);
-  
+
   const [stats, setStats] = useState({
     owned: 0,
     created: 0,
@@ -22,8 +23,8 @@ export function useUserStats(address) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!address || nftsLoading || listingsLoading || auctionsLoading) {
-      setIsLoading(nftsLoading || listingsLoading || auctionsLoading);
+    if (!address || nftsLoading || createdLoading || listingsLoading || auctionsLoading) {
+      setIsLoading(nftsLoading || createdLoading || listingsLoading || auctionsLoading);
       return;
     }
 
@@ -32,16 +33,15 @@ export function useUserStats(address) {
         // Count owned NFTs
         const owned = balance || 0;
 
-        // Count created NFTs (this would need to be tracked differently in a real app)
-        // For now, we'll estimate based on owned NFTs
-        const created = owned; // This is a simplification
+        // Count created NFTs
+        const created = createdNFTs.length || 0;
 
         // Count active listings
         const activeListings = userListings.filter(listing => listing.active).length;
 
         // Count active auctions
         const now = Date.now();
-        const activeAuctions = userAuctions.filter(auction => 
+        const activeAuctions = userAuctions.filter(auction =>
           auction.active && auction.endTime > now
         ).length;
 
@@ -71,11 +71,12 @@ export function useUserStats(address) {
     };
 
     calculateStats();
-  }, [address, balance, userListings, userAuctions, nftsLoading, listingsLoading, auctionsLoading]);
+  }, [address, balance, createdNFTs, userListings, userAuctions, nftsLoading, createdLoading, listingsLoading, auctionsLoading]);
 
   return {
     stats,
     ownedNFTs,
+    createdNFTs,
     userListings,
     userAuctions,
     isLoading,

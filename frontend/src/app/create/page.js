@@ -17,6 +17,7 @@ export default function CreatePage() {
     imagePreview: null
   });
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   // Use custom hook for minting
   const { mintNFT, isPending: isMinting, isConfirming, isConfirmed } = useMintNFT();
@@ -70,15 +71,37 @@ export default function CreatePage() {
     }
 
     try {
-      // In a real app, you would upload to IPFS first
-      // For now, we'll use a placeholder metadata URI
-      const metadataURI = `https://api.lumina.com/metadata/${Date.now()}`;
-      const royaltyBps = Math.floor(formData.royalty * 100); // Convert to basis points
+      setUploadError('');
+      setIsUploading(true);
 
+      // Build multipart form and upload to API → nft.storage
+      const multipart = new FormData();
+      multipart.append('image', formData.image);
+      multipart.append('name', formData.name);
+      multipart.append('description', formData.description);
+      multipart.append('category', formData.category);
+
+      const resp = await fetch('/api/ipfs/upload', {
+        method: 'POST',
+        body: multipart,
+      });
+
+      if (!resp.ok) {
+        const e = await resp.json().catch(() => ({}));
+        throw new Error(e?.error || 'Upload failed');
+      }
+
+      const { metadataURI } = await resp.json();
+      if (!metadataURI) throw new Error('No metadataURI returned');
+
+      const royaltyBps = Math.floor(formData.royalty * 100); // Convert to basis points
       await mintNFT(metadataURI, royaltyBps, formData.category);
     } catch (error) {
       console.error('Minting failed:', error);
+      setUploadError(String(error?.message || error));
       alert('Minting failed. Please try again.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -236,13 +259,13 @@ export default function CreatePage() {
                 {/* Mint Button */}
                 <button
                   onClick={handleMint}
-                  disabled={isMinting || isConfirming || !formData.image || !formData.name || !formData.description}
+                  disabled={isUploading || isMinting || isConfirming || !formData.image || !formData.name || !formData.description}
                   className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
-                  {isMinting || isConfirming ? (
+                  {isUploading || isMinting || isConfirming ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      {isConfirming ? 'Confirming...' : 'Minting...'}
+                      {isUploading ? 'Uploading to IPFS...' : isConfirming ? 'Confirming...' : 'Minting...'}
                     </>
                   ) : (
                     <>
@@ -251,6 +274,12 @@ export default function CreatePage() {
                     </>
                   )}
                 </button>
+
+                {uploadError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    {uploadError}
+                  </div>
+                )}
 
                 {isConfirmed && (
                   <div className="p-4 bg-green-50 border border-green-200 rounded-lg">

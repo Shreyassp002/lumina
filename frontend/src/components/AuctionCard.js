@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { LUMINA_AUCTION_ABI, LUMINA_AUCTION_ADDRESS } from '../../abi/luminaAuction';
+import { useAccount } from 'wagmi';
+import { usePlaceBid, useBuyNow } from '../hooks/useAuction';
 import { formatEther, parseEther } from 'viem';
 import Link from 'next/link';
 import { Clock, Gavel, Zap, ExternalLink } from 'lucide-react';
@@ -14,11 +14,8 @@ export default function AuctionCard({ auction, currentUser }) {
   const [isBidding, setIsBidding] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
 
-  const { writeContract, data: hash } = useWriteContract();
-
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash,
-  });
+  const { placeBid, isConfirming: isBidConfirming } = usePlaceBid();
+  const { buyNow, isConfirming: isBuyConfirming } = useBuyNow();
 
   useEffect(() => {
     const updateTimer = () => {
@@ -62,13 +59,7 @@ export default function AuctionCard({ auction, currentUser }) {
 
     setIsBidding(true);
     try {
-      await writeContract({
-        address: LUMINA_AUCTION_ADDRESS,
-        abi: LUMINA_AUCTION_ABI,
-        functionName: 'placeBid',
-        args: [auction.id],
-        value: bidValue,
-      });
+      await placeBid(auction.id, bidValue);
     } catch (error) {
       console.error('Bid failed:', error);
       alert('Bid failed. Please try again.');
@@ -82,13 +73,7 @@ export default function AuctionCard({ auction, currentUser }) {
 
     setIsBuyingNow(true);
     try {
-      await writeContract({
-        address: LUMINA_AUCTION_ADDRESS,
-        abi: LUMINA_AUCTION_ABI,
-        functionName: 'buyNow',
-        args: [auction.id],
-        value: auction.buyNowPrice,
-      });
+      await buyNow(auction.id, auction.buyNowPrice);
     } catch (error) {
       console.error('Buy now failed:', error);
       alert('Buy now failed. Please try again.');
@@ -112,13 +97,12 @@ export default function AuctionCard({ auction, currentUser }) {
           className="w-full h-full object-cover"
         />
         <div className="absolute top-3 left-3">
-          <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            isActive 
-              ? 'bg-green-500 text-white' 
-              : isEnded 
+          <div className={`px-3 py-1 rounded-full text-xs font-semibold ${isActive
+              ? 'bg-green-500 text-white'
+              : isEnded
                 ? 'bg-gray-500 text-white'
                 : 'bg-blue-500 text-white'
-          }`}>
+            }`}>
             {isActive ? 'Live' : isEnded ? 'Ended' : 'Upcoming'}
           </div>
         </div>
@@ -191,13 +175,13 @@ export default function AuctionCard({ auction, currentUser }) {
               {!isOwner && (
                 <button
                   onClick={handleBuyNow}
-                  disabled={isBuyingNow || isConfirming}
+                  disabled={isBuyingNow || isBuyConfirming}
                   className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 >
-                  {isBuyingNow || isConfirming ? (
+                  {isBuyingNow || isBuyConfirming ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      {isConfirming ? 'Confirming...' : 'Buying...'}
+                      {isBuyConfirming ? 'Confirming...' : 'Buying...'}
                     </>
                   ) : (
                     <>
@@ -228,13 +212,13 @@ export default function AuctionCard({ auction, currentUser }) {
             </div>
             <button
               onClick={handleBid}
-              disabled={isBidding || isConfirming || !bidAmount || isCurrentBidder}
+              disabled={isBidding || isBidConfirming || !bidAmount || isCurrentBidder}
               className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              {isBidding || isConfirming ? (
+              {isBidding || isBidConfirming ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  {isConfirming ? 'Confirming...' : 'Placing Bid...'}
+                  {isBidConfirming ? 'Confirming...' : 'Placing Bid...'}
                 </>
               ) : isCurrentBidder ? (
                 'You are the highest bidder'

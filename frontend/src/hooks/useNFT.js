@@ -1,6 +1,6 @@
 'use client';
 
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
 import { LUMINA_NFT_ABI, LUMINA_NFT_ADDRESS } from '../../abi/luminaNft';
 import { useState, useEffect } from 'react';
 
@@ -62,58 +62,86 @@ export function useUserNFTs(address) {
   const { data: balance, isLoading: balanceLoading } = useUserNFTBalance(address);
   const [userNFTs, setUserNFTs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const publicClient = usePublicClient();
 
   useEffect(() => {
-    if (!address || balanceLoading || !balance) {
-      setIsLoading(balanceLoading);
+    if (!address) {
+      setIsLoading(false);
+      setUserNFTs([]);
       return;
     }
 
     const fetchUserNFTs = async () => {
       setIsLoading(true);
       try {
-        // Get total supply to iterate through all tokens
-        const { data: totalSupply } = await fetch('/api/contracts/totalSupply', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contractAddress: LUMINA_NFT_ADDRESS }),
+        // Read the current token counter from contract
+        const currentTokenId = await publicClient.readContract({
+          address: LUMINA_NFT_ADDRESS,
+          abi: LUMINA_NFT_ABI,
+          functionName: 'getCurrentTokenId',
+          args: [],
         });
 
-        if (totalSupply) {
-          const nfts = [];
-          for (let i = 1; i <= totalSupply; i++) {
-            try {
-              const { data: owner } = await fetch('/api/contracts/ownerOf', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  contractAddress: LUMINA_NFT_ADDRESS,
-                  tokenId: i 
-                }),
-              });
-
-              if (owner?.toLowerCase() === address.toLowerCase()) {
-                const { data: tokenData } = await fetch('/api/contracts/tokenData', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ 
-                    contractAddress: LUMINA_NFT_ADDRESS,
-                    tokenId: i 
-                  }),
-                });
-
-                nfts.push({
-                  tokenId: i,
-                  owner,
-                  tokenData,
-                });
-              }
-            } catch (error) {
-              console.error(`Error fetching token ${i}:`, error);
-            }
-          }
-          setUserNFTs(nfts);
+        if (!currentTokenId || Number(currentTokenId) === 0) {
+          setUserNFTs([]);
+          return;
         }
+
+        const tokenIds = Array.from({ length: Number(currentTokenId) }, (_, idx) => idx + 1);
+
+        const owners = await Promise.all(
+          tokenIds.map((id) =>
+            publicClient
+              .readContract({ address: LUMINA_NFT_ADDRESS, abi: LUMINA_NFT_ABI, functionName: 'ownerOf', args: [id] })
+              .catch(() => null)
+          )
+        );
+
+        const ownedIds = tokenIds.filter((id, i) => owners[i] && owners[i].toLowerCase() === address.toLowerCase());
+
+        const [tokenDatas, tokenUris] = await Promise.all([
+          Promise.all(
+            ownedIds.map((id) =>
+              publicClient
+                .readContract({ address: LUMINA_NFT_ADDRESS, abi: LUMINA_NFT_ABI, functionName: 'tokenData', args: [id] })
+                .catch(() => null)
+            )
+          ),
+          Promise.all(
+            ownedIds.map((id) =>
+              publicClient
+                .readContract({ address: LUMINA_NFT_ADDRESS, abi: LUMINA_NFT_ABI, functionName: 'tokenURI', args: [id] })
+                .catch(() => null)
+            )
+          ),
+        ]);
+
+        const resolveIpfs = (uri) => {
+          if (!uri) return null;
+          if (uri.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${uri.replace('ipfs://', '')}`;
+          return uri;
+        };
+
+        const metadataJsons = await Promise.all(
+          tokenUris.map(async (uri) => {
+            try {
+              const httpUri = resolveIpfs(uri);
+              if (!httpUri) return null;
+              const res = await fetch(httpUri);
+              if (!res.ok) return null;
+              return await res.json();
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        const nfts = ownedIds.map((id, index) => {
+          const md = metadataJsons[index];
+          const imageUrl = md?.image ? resolveIpfs(md.image) : null;
+          return { tokenId: id, owner: address, tokenData: tokenDatas[index], tokenURI: tokenUris[index], imageUrl };
+        });
+        setUserNFTs(nfts);
       } catch (error) {
         console.error('Error fetching user NFTs:', error);
       } finally {
@@ -122,11 +150,104 @@ export function useUserNFTs(address) {
     };
 
     fetchUserNFTs();
-  }, [address, balance, balanceLoading]);
+  }, [address, publicClient]);
 
   return {
     nfts: userNFTs,
     balance,
+    isLoading,
+  };
+}
+
+// Hook to get user's created NFTs
+export function useUserCreatedNFTs(address) {
+  const [createdNFTs, setCreatedNFTs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const publicClient = usePublicClient();
+
+  useEffect(() => {
+    if (!address) {
+      setIsLoading(false);
+      setCreatedNFTs([]);
+      return;
+    }
+
+    const fetchCreated = async () => {
+      setIsLoading(true);
+      try {
+        const currentTokenId = await publicClient.readContract({
+          address: LUMINA_NFT_ADDRESS,
+          abi: LUMINA_NFT_ABI,
+          functionName: 'getCurrentTokenId',
+          args: [],
+        });
+
+        if (!currentTokenId || Number(currentTokenId) === 0) {
+          setCreatedNFTs([]);
+          return;
+        }
+
+        const tokenIds = Array.from({ length: Number(currentTokenId) }, (_, idx) => idx + 1);
+
+        const [tokenDatas, tokenUris] = await Promise.all([
+          Promise.all(
+            tokenIds.map((id) =>
+              publicClient
+                .readContract({ address: LUMINA_NFT_ADDRESS, abi: LUMINA_NFT_ABI, functionName: 'tokenData', args: [id] })
+                .catch(() => null)
+            )
+          ),
+          Promise.all(
+            tokenIds.map((id) =>
+              publicClient
+                .readContract({ address: LUMINA_NFT_ADDRESS, abi: LUMINA_NFT_ABI, functionName: 'tokenURI', args: [id] })
+                .catch(() => null)
+            )
+          ),
+        ]);
+
+        const created = tokenIds
+          .map((id, i) => ({ id, data: tokenDatas[i], uri: tokenUris[i] }))
+          .filter((x) => x.data && x.data.creator && x.data.creator.toLowerCase() === address.toLowerCase());
+
+        const resolveIpfs = (uri) => {
+          if (!uri) return null;
+          if (uri.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${uri.replace('ipfs://', '')}`;
+          return uri;
+        };
+
+        const metadataJsons = await Promise.all(
+          created.map(async (x) => {
+            try {
+              const httpUri = resolveIpfs(x.uri);
+              if (!httpUri) return null;
+              const res = await fetch(httpUri);
+              if (!res.ok) return null;
+              return await res.json();
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        const nfts = created.map((x, idx) => {
+          const md = metadataJsons[idx];
+          const imageUrl = md?.image ? resolveIpfs(md.image) : null;
+          return { tokenId: x.id, owner: null, tokenData: x.data, tokenURI: x.uri, imageUrl };
+        });
+        setCreatedNFTs(nfts);
+      } catch (error) {
+        console.error('Error fetching created NFTs:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCreated();
+  }, [address, publicClient]);
+
+  return {
+    nfts: createdNFTs,
     isLoading,
   };
 }
