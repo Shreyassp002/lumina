@@ -227,7 +227,7 @@ export default function ProfilePage() {
                           )}
                           <div className="p-4">
                             <h4 className="font-semibold text-emerald-200 mb-1">
-                              {nft.metadata?.name || `NFT #${nft.tokenId}`}
+                              {nft.metadata?.name || nft.tokenData?.name || `NFT #${nft.tokenId}`}
                             </h4>
                             <p className="text-sm text-green-200/70 mb-2">
                               {nft.tokenData?.category || 'Art'}
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                           )}
                           <div className="p-4">
                             <h4 className="font-semibold text-emerald-200 mb-1">
-                              {nft.metadata?.name || `NFT #${nft.tokenId}`}
+                              {nft.metadata?.name || nft.tokenData?.name || `NFT #${nft.tokenId}`}
                             </h4>
                             <p className="text-sm text-green-200/70 mb-2">
                               {nft.tokenData?.category || 'Art'}
