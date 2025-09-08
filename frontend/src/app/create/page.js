@@ -123,25 +123,25 @@ export default function CreatePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-emerald-200 mb-4">
               Create Your NFT
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-green-200/70">
               Upload your digital art and mint it as an NFT on the Somnia blockchain
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="glass-panel rounded-2xl p-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-4">
+                <label className="block text-sm font-medium text-green-200/80 mb-4">
                   Upload Image *
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors">
+                <div className="border-2 border-dashed border-[#133027] rounded-lg p-8 text-center hover:border-emerald-400 transition-colors">
                   {formData.imagePreview ? (
                     <div className="space-y-4">
                       <img
@@ -151,16 +151,16 @@ export default function CreatePage() {
                       />
                       <button
                         onClick={() => setFormData(prev => ({ ...prev, image: null, imagePreview: null }))}
-                        className="text-sm text-red-600 hover:text-red-700"
+                        className="text-sm text-red-400 hover:text-red-300"
                       >
                         Remove Image
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600 mb-2">Drag and drop your image here</p>
-                      <p className="text-sm text-gray-500 mb-4">or click to browse</p>
+                      <ImageIcon className="w-12 h-12 text-green-200/60 mx-auto mb-4" />
+                      <p className="text-green-200/70 mb-2">Drag and drop your image here</p>
+                      <p className="text-sm text-green-200/60 mb-4">or click to browse</p>
                       <input
                         type="file"
                         accept="image/*"
@@ -170,12 +170,12 @@ export default function CreatePage() {
                       />
                       <label
                         htmlFor="image-upload"
-                        className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 cursor-pointer transition-colors"
+                        className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-lime-500 text-black rounded-lg hover:from-emerald-400 hover:to-lime-400 cursor-pointer transition-colors neon-glow"
                       >
                         <Upload className="w-4 h-4 mr-2" />
                         Choose File
                       </label>
-                      <p className="text-xs text-gray-500 mt-2">Max 50MB. JPG, PNG, GIF, SVG supported</p>
+                      <p className="text-xs text-green-200/60 mt-2">Max 50MB. JPG, PNG, GIF, SVG supported</p>
                     </div>
                   )}
                 </div>
@@ -185,7 +185,7 @@ export default function CreatePage() {
               <div className="space-y-6">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-green-200/80 mb-2">
                     <FileText className="w-4 h-4 inline mr-1" />
                     NFT Name *
                   </label>
@@ -194,13 +194,13 @@ export default function CreatePage() {
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     placeholder="Enter a unique name for your NFT"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 glass-panel rounded-lg focus:outline-none"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-green-200/80 mb-2">
                     Description *
                   </label>
                   <textarea
@@ -208,20 +208,20 @@ export default function CreatePage() {
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Describe your NFT and its story"
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 glass-panel rounded-lg focus:outline-none"
                   />
                 </div>
 
                 {/* Category */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-green-200/80 mb-2">
                     <Tag className="w-4 h-4 inline mr-1" />
                     Category
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => handleInputChange('category', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 glass-panel rounded-lg focus:outline-none"
                   >
                     {categories.map((category) => (
                       <option key={category.value} value={category.value}>
@@ -233,7 +233,7 @@ export default function CreatePage() {
 
                 {/* Royalty */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-green-200/80 mb-2">
                     <DollarSign className="w-4 h-4 inline mr-1" />
                     Royalty Percentage
                   </label>
@@ -245,13 +245,13 @@ export default function CreatePage() {
                       step="0.1"
                       value={formData.royalty}
                       onChange={(e) => handleInputChange('royalty', parseFloat(e.target.value) || 0)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-8"
+                      className="w-full px-4 py-3 glass-panel rounded-lg pr-8 focus:outline-none"
                     />
-                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
                       %
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-green-200/70 mt-1">
                     You&apos;ll receive this percentage from future sales (max 10%)
                   </p>
                 </div>
@@ -260,11 +260,11 @@ export default function CreatePage() {
                 <button
                   onClick={handleMint}
                   disabled={isUploading || isMinting || isConfirming || !formData.image || !formData.name || !formData.description}
-                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full py-4 bg-gradient-to-r from-emerald-500 to-lime-500 text-black font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center neon-glow"
                 >
                   {isUploading || isMinting || isConfirming ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></div>
                       {isUploading ? 'Uploading to IPFS...' : isConfirming ? 'Confirming...' : 'Minting...'}
                     </>
                   ) : (
@@ -276,15 +276,15 @@ export default function CreatePage() {
                 </button>
 
                 {uploadError && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  <div className="p-3 bg-[#2a0f0f] border border-red-400/40 rounded-lg text-red-400 text-sm">
                     {uploadError}
                   </div>
                 )}
 
                 {isConfirmed && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-green-800 font-medium">NFT minted successfully!</p>
-                    <p className="text-green-600 text-sm mt-1">
+                  <div className="p-4 bg-[#0e1518] border border-emerald-400/40 rounded-lg">
+                    <p className="text-emerald-300 font-medium">NFT minted successfully!</p>
+                    <p className="text-green-200/80 text-sm mt-1">
                       Your NFT is now live on the blockchain.
                     </p>
                   </div>

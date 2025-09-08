@@ -41,12 +41,12 @@ export default function FilterPanel({ filters, onFiltersChange }) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="glass-panel rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        <h3 className="text-lg font-semibold text-emerald-200">Filters</h3>
         <button
           onClick={clearFilters}
-          className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+          className="text-sm text-emerald-300 hover:text-emerald-200 font-medium"
         >
           Clear All
         </button>
@@ -55,20 +55,20 @@ export default function FilterPanel({ filters, onFiltersChange }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Category Filter */}
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-green-200/80 mb-2">
             Category
           </label>
           <div className="relative">
             <button
               onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-              className="w-full px-3 py-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent flex items-center justify-between"
+              className="w-full px-3 py-2 text-left glass-panel rounded-lg flex items-center justify-between"
             >
               <span>{categories.find(c => c.value === filters.category)?.label}</span>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
+              <ChevronDown className="w-4 h-4 text-green-200/70" />
             </button>
-            
+
             {showCategoryDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+              <div className="absolute z-10 w-full mt-1 glass-panel rounded-lg shadow-lg">
                 {categories.map((category) => (
                   <button
                     key={category.value}
@@ -76,9 +76,8 @@ export default function FilterPanel({ filters, onFiltersChange }) {
                       onFiltersChange({ ...filters, category: category.value });
                       setShowCategoryDropdown(false);
                     }}
-                    className={`w-full px-3 py-2 text-left hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
-                      filters.category === category.value ? 'bg-purple-50 text-purple-600' : ''
-                    }`}
+                    className={`w-full px-3 py-2 text-left hover:bg-[#0e1518] first:rounded-t-lg last:rounded-b-lg ${filters.category === category.value ? 'text-emerald-300 accent-ring' : ''
+                      }`}
                   >
                     {category.label}
                   </button>
@@ -90,7 +89,7 @@ export default function FilterPanel({ filters, onFiltersChange }) {
 
         {/* Price Range */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-green-200/80 mb-2">
             Price Range (ETH)
           </label>
           <div className="flex items-center space-x-2">
@@ -99,35 +98,35 @@ export default function FilterPanel({ filters, onFiltersChange }) {
               placeholder="Min"
               value={filters.priceRange[0]}
               onChange={(e) => handlePriceChange(0, e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 glass-panel rounded-lg focus:outline-none"
             />
-            <span className="text-gray-500">to</span>
+            <span className="text-green-200/60">to</span>
             <input
               type="number"
               placeholder="Max"
               value={filters.priceRange[1]}
               onChange={(e) => handlePriceChange(1, e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 glass-panel rounded-lg focus:outline-none"
             />
           </div>
         </div>
 
         {/* Sort By */}
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-green-200/80 mb-2">
             Sort By
           </label>
           <div className="relative">
             <button
               onClick={() => setShowSortDropdown(!showSortDropdown)}
-              className="w-full px-3 py-2 text-left border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent flex items-center justify-between"
+              className="w-full px-3 py-2 text-left glass-panel rounded-lg flex items-center justify-between"
             >
               <span>{sortOptions.find(s => s.value === filters.sortBy)?.label}</span>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
+              <ChevronDown className="w-4 h-4 text-green-200/70" />
             </button>
-            
+
             {showSortDropdown && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+              <div className="absolute z-10 w-full mt-1 glass-panel rounded-lg shadow-lg">
                 {sortOptions.map((option) => (
                   <button
                     key={option.value}
@@ -135,9 +134,8 @@ export default function FilterPanel({ filters, onFiltersChange }) {
                       onFiltersChange({ ...filters, sortBy: option.value });
                       setShowSortDropdown(false);
                     }}
-                    className={`w-full px-3 py-2 text-left hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
-                      filters.sortBy === option.value ? 'bg-purple-50 text-purple-600' : ''
-                    }`}
+                    className={`w-full px-3 py-2 text-left hover:bg-[#0e1518] first:rounded-t-lg last:rounded-b-lg ${filters.sortBy === option.value ? 'text-emerald-300 accent-ring' : ''
+                      }`}
                   >
                     {option.label}
                   </button>
@@ -154,9 +152,9 @@ export default function FilterPanel({ filters, onFiltersChange }) {
               type="checkbox"
               checked={filters.verifiedOnly}
               onChange={(e) => onFiltersChange({ ...filters, verifiedOnly: e.target.checked })}
-              className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+              className="w-4 h-4 text-emerald-500 bg-[#0e1518] border-[#133027] rounded focus:ring-emerald-500"
             />
-            <span className="ml-2 text-sm text-gray-700">Verified creators only</span>
+            <span className="ml-2 text-sm text-green-200/80">Verified creators only</span>
           </label>
         </div>
       </div>

@@ -17,7 +17,7 @@ const somniaTestnet = defineChain({
     },
   },
   blockExplorers: {
-    default: { name: 'Somnia Explorer', url: 'https://explorer.somnia.network' },
+    default: { name: 'Somnia Explorer', url: 'https://shannon-explorer.somnia.network' },
   },
   testnet: true,
 });

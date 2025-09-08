@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useActiveListings } from '../hooks/useMarketplace';
 import NFTCard from './NFTCard';
-import { Loader2 } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 
 export default function NFTGrid({ searchTerm, filters }) {
   const { address } = useAccount();
@@ -22,14 +22,26 @@ export default function NFTGrid({ searchTerm, filters }) {
 
   // Process listings data
   const processedListings = activeListings ? (() => {
+    console.log('Raw activeListings:', activeListings);
     const [listingData, tokenIds] = activeListings;
-    if (listingData && tokenIds) {
-      return listingData.map((listing, index) => ({
-        ...listing,
-        tokenId: tokenIds[index],
-        listingId: index + (page * 20)
-      }));
+    console.log('Listing data:', listingData);
+    console.log('Token IDs:', tokenIds);
+
+    if (listingData && tokenIds && Array.isArray(listingData) && Array.isArray(tokenIds)) {
+      const processed = listingData.map((listing, index) => {
+        const priceWei = typeof listing.price === 'bigint' ? listing.price : BigInt(String(listing.price));
+        return {
+          ...listing,
+          // Keep on-chain tokenId from listing; second array contains listing IDs
+          tokenId: listing.tokenId,
+          listingId: tokenIds[index],
+          priceWei,
+        };
+      });
+      console.log('Processed listings:', processed);
+      return processed;
     }
+    console.log('No valid listing data found');
     return [];
   })() : [];
 
@@ -44,8 +56,14 @@ export default function NFTGrid({ searchTerm, filters }) {
     }
 
     // Price range filter
-    if (listing.price < filters.priceRange[0] || listing.price > filters.priceRange[1]) {
-      return false;
+    try {
+      const minWei = BigInt(Math.floor(filters.priceRange[0] * 1e18));
+      const maxWei = BigInt(Math.floor(filters.priceRange[1] * 1e18));
+      if (listing.priceWei < minWei || listing.priceWei > maxWei) {
+        return false;
+      }
+    } catch (e) {
+      // If conversion fails, skip price filtering
     }
 
     return true;
@@ -54,7 +72,7 @@ export default function NFTGrid({ searchTerm, filters }) {
   if (isLoading && page === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -62,8 +80,8 @@ export default function NFTGrid({ searchTerm, filters }) {
   if (filteredListings.length === 0 && !isLoading) {
     return (
       <div className="text-center py-12">
-        <div className="text-gray-500 text-lg mb-4">No NFTs found</div>
-        <p className="text-gray-400">
+        <div className="text-green-200/70 text-lg mb-4">No NFTs found</div>
+        <p className="text-green-200/60">
           {searchTerm ? 'Try adjusting your search terms' : 'No active listings at the moment'}
         </p>
       </div>
@@ -72,12 +90,27 @@ export default function NFTGrid({ searchTerm, filters }) {
 
   return (
     <div>
+      {/* Refresh Button */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold text-emerald-200">
+          Active Listings ({filteredListings.length})
+        </h2>
+        <button
+          onClick={refetch}
+          disabled={isLoading}
+          className="flex items-center px-4 py-2 text-sm glass-panel rounded-lg hover:neon-glow transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredListings.map((listing) => (
           <NFTCard
             key={`${listing.tokenId}-${listing.listingId}`}
             tokenId={listing.tokenId}
-            price={listing.price}
+            price={listing.priceWei}
             seller={listing.seller}
             listingId={listing.listingId}
           />
@@ -90,7 +123,7 @@ export default function NFTGrid({ searchTerm, filters }) {
           <button
             onClick={loadMore}
             disabled={isLoading}
-            className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-lime-500 text-black font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed neon-glow"
           >
             {isLoading ? (
               <>

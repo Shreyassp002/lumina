@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi';
 import { useAllAuctions } from '../../hooks/useAuction';
 import Layout from '../../components/Layout';
 import AuctionCard from '../../components/AuctionCard';
+import AuctionsDebug from '../../components/AuctionsDebug';
 import { Gavel, Clock, TrendingUp } from 'lucide-react';
 
 export default function AuctionsPage() {
@@ -41,10 +42,10 @@ export default function AuctionsPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading auctions...</p>
+            <div className="w-8 h-8 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-green-200/70">Loading auctions...</p>
           </div>
         </div>
       </Layout>
@@ -53,67 +54,72 @@ export default function AuctionsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200">
+        <div className="glass-panel">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-emerald-200 mb-4">
                 NFT Auctions
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl text-green-200/70 max-w-2xl mx-auto">
                 Bid on unique NFTs and discover rare digital collectibles through our auction system
               </p>
             </div>
           </div>
         </div>
 
+        {/* Debug */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <AuctionsDebug />
+        </div>
+
         {/* Stats */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="glass-panel p-6 rounded-xl">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
-                  <Gavel className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mr-4">
+                  <Gavel className="w-6 h-6 text-black" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">{activeAuctions}</div>
-                  <div className="text-gray-600">Active Auctions</div>
+                  <div className="text-2xl font-bold text-emerald-300">{activeAuctions}</div>
+                  <div className="text-green-200/70">Active Auctions</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="glass-panel p-6 rounded-xl">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-4">
-                  <Clock className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mr-4">
+                  <Clock className="w-6 h-6 text-black" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold text-emerald-300">
                     {auctions.filter(a => a.status === 'active' && a.endTime - Date.now() < 60 * 60 * 1000).length}
                   </div>
-                  <div className="text-gray-600">Ending Soon</div>
+                  <div className="text-green-200/70">Ending Soon</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="glass-panel p-6 rounded-xl">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-4">
-                  <TrendingUp className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mr-4">
+                  <TrendingUp className="w-6 h-6 text-black" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">
+                  <div className="text-2xl font-bold text-emerald-300">
                     {totalVolume.toFixed(2)} ETH
                   </div>
-                  <div className="text-gray-600">Total Volume</div>
+                  <div className="text-green-200/70">Total Volume</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-8">
+          <div className="flex space-x-1 glass-panel p-1 rounded-lg mb-8">
             {[
               { key: 'all', label: 'All Auctions' },
               { key: 'active', label: 'Active' },
@@ -124,8 +130,8 @@ export default function AuctionsPage() {
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${filter === tab.key
-                  ? 'bg-white text-purple-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-[#0e1518] text-emerald-300 accent-ring'
+                  : 'text-green-200/70 hover:text-emerald-200'
                   }`}
               >
                 {tab.label}
@@ -136,9 +142,9 @@ export default function AuctionsPage() {
           {/* Auction Grid */}
           {filteredAuctions.length === 0 ? (
             <div className="text-center py-12">
-              <Gavel className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No auctions found</h3>
-              <p className="text-gray-600">
+              <Gavel className="w-16 h-16 text-green-200/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-emerald-200 mb-2">No auctions found</h3>
+              <p className="text-green-200/70">
                 {filter === 'all'
                   ? 'No auctions are currently available'
                   : `No ${filter.replace('-', ' ')} auctions found`

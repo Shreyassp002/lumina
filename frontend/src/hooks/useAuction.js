@@ -153,17 +153,29 @@ export function useAllAuctions() {
           .filter(Boolean)
           .map((entry, idx) => {
             const a = entry.a;
+            // Support both tuple-as-object and tuple-as-array shapes
+            const tokenId = Array.isArray(a) ? Number(a[0]) : Number(a.tokenId);
+            const seller = Array.isArray(a) ? a[2] : a.seller;
+            const startPrice = Array.isArray(a) ? a[3] : a.startPrice;
+            const currentBid = Array.isArray(a) ? a[4] : a.currentBid;
+            const currentBidder = Array.isArray(a) ? a[5] : a.currentBidder;
+            const endTimeSec = Array.isArray(a) ? Number(a[7]) : Number(a.endTime);
+            const minIncrement = Array.isArray(a) ? a[8] : a.minIncrement;
+            const active = Array.isArray(a) ? Boolean(a[10]) : Boolean(a.active);
+            const settled = Array.isArray(a) ? Boolean(a[11]) : Boolean(a.settled);
+            const buyNowPriceRaw = Array.isArray(a) ? a[12] : a.buyNowPrice;
+            const nowActive = active && Date.now() < endTimeSec * 1000;
             return {
               id: entry.id,
-              tokenId: Number(a.tokenId),
-              seller: a.seller,
-              startPrice: a.startPrice,
-              currentBid: a.currentBid,
-              currentBidder: a.currentBidder,
-              endTime: Number(a.endTime) * 1000,
-              minIncrement: a.minIncrement,
-              buyNowPrice: a.buyNowPrice && a.buyNowPrice > 0n ? a.buyNowPrice : null,
-              status: a.active ? 'active' : a.settled ? 'ended' : 'inactive',
+              tokenId,
+              seller,
+              startPrice,
+              currentBid,
+              currentBidder,
+              endTime: endTimeSec * 1000,
+              minIncrement,
+              buyNowPrice: buyNowPriceRaw && buyNowPriceRaw > 0n ? buyNowPriceRaw : null,
+              status: nowActive ? 'active' : settled ? 'ended' : 'inactive',
               bidCount: bidsCounts[idx] || 0,
             };
           })
