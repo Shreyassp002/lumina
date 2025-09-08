@@ -14,12 +14,19 @@ export default function AuctionsPage() {
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, active, ending-soon, ended
-  const { auctions: allAuctions, isLoading } = useAllAuctions();
+  const { auctions: allAuctions, isLoading, refetch } = useAllAuctions();
 
   useEffect(() => {
     setLoading(isLoading);
     setAuctions(allAuctions || []);
   }, [allAuctions, isLoading]);
+
+  // Auto-refetch on auctions updates (redundant to hook listener but keeps page state in sync)
+  useEffect(() => {
+    const handler = () => refetch();
+    window.addEventListener('auctions:updated', handler);
+    return () => window.removeEventListener('auctions:updated', handler);
+  }, [refetch]);
 
   const filteredAuctions = auctions.filter(auction => {
     const now = Date.now();

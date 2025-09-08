@@ -113,6 +113,81 @@ export function useAllAuctions() {
   const [isLoading, setIsLoading] = useState(true);
   const publicClient = usePublicClient();
 
+  const load = async () => {
+    try {
+      setIsLoading(true);
+      const currentAuctionId = await publicClient.readContract({
+        address: LUMINA_AUCTION_ADDRESS,
+        abi: LUMINA_AUCTION_ABI,
+        functionName: 'getCurrentAuctionId',
+        args: [],
+      });
+
+      const count = Number(currentAuctionId || 0);
+      if (!count) {
+        setAuctions([]);
+        return;
+      }
+
+      const ids = Array.from({ length: count }, (_, i) => i + 1);
+      const rawAuctions = await Promise.all(
+        ids.map((id) =>
+          publicClient
+            .readContract({ address: LUMINA_AUCTION_ADDRESS, abi: LUMINA_AUCTION_ABI, functionName: 'auctions', args: [id] })
+            .then((a) => ({ id, a }))
+            .catch(() => null)
+        )
+      );
+
+      const bidsCounts = await Promise.all(
+        ids.map((id) =>
+          publicClient
+            .readContract({ address: LUMINA_AUCTION_ADDRESS, abi: LUMINA_AUCTION_ABI, functionName: 'getAuctionBids', args: [id] })
+            .then((b) => (Array.isArray(b) ? b.length : 0))
+            .catch(() => 0)
+        )
+      );
+
+      const auctionsParsed = rawAuctions
+        .filter(Boolean)
+        .map((entry, idx) => {
+          const a = entry.a;
+          const tokenId = Array.isArray(a) ? Number(a[0]) : Number(a.tokenId);
+          const seller = Array.isArray(a) ? a[2] : a.seller;
+          const startPrice = Array.isArray(a) ? a[3] : a.startPrice;
+          const currentBid = Array.isArray(a) ? a[4] : a.currentBid;
+          const currentBidder = Array.isArray(a) ? a[5] : a.currentBidder;
+          const endTimeSec = Array.isArray(a) ? Number(a[7]) : Number(a.endTime);
+          const minIncrement = Array.isArray(a) ? a[8] : a.minIncrement;
+          const active = Array.isArray(a) ? Boolean(a[10]) : Boolean(a.active);
+          const settled = Array.isArray(a) ? Boolean(a[11]) : Boolean(a.settled);
+          const buyNowPriceRaw = Array.isArray(a) ? a[12] : a.buyNowPrice;
+          const nowActive = active && Date.now() < endTimeSec * 1000;
+          return {
+            id: entry.id,
+            tokenId,
+            seller,
+            startPrice,
+            currentBid,
+            currentBidder,
+            endTime: endTimeSec * 1000,
+            minIncrement,
+            buyNowPrice: buyNowPriceRaw && buyNowPriceRaw > 0n ? buyNowPriceRaw : null,
+            status: nowActive ? 'active' : settled ? 'ended' : 'inactive',
+            bidCount: bidsCounts[idx] || 0,
+          };
+        })
+        .filter((x) => x.status !== 'inactive');
+
+      setAuctions(auctionsParsed);
+    } catch (e) {
+      console.error('Failed loading auctions', e);
+      setAuctions([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -191,9 +266,12 @@ export function useAllAuctions() {
     };
 
     load();
+    const onUpdated = () => load();
+    try { window.addEventListener('auctions:updated', onUpdated); } catch { }
+    return () => { try { window.removeEventListener('auctions:updated', onUpdated); } catch { } };
   }, [publicClient]);
 
-  return { auctions, isLoading };
+  return { auctions, isLoading, refetch: load };
 }
 
 // Hook to create auction
@@ -202,6 +280,12 @@ export function useCreateAuction() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   });
+
+  useEffect(() => {
+    if (isConfirmed) {
+      try { window.dispatchEvent(new CustomEvent('auctions:updated')); } catch { }
+    }
+  }, [isConfirmed]);
 
   const createAuction = async (tokenId, startPrice, duration, minIncrement, auctionType, buyNowPrice) => {
     try {
@@ -233,6 +317,12 @@ export function usePlaceBid() {
     hash,
   });
 
+  useEffect(() => {
+    if (isConfirmed) {
+      try { window.dispatchEvent(new CustomEvent('auctions:updated')); } catch { }
+    }
+  }, [isConfirmed]);
+
   const placeBid = async (auctionId, bidAmount) => {
     try {
       await writeContract({
@@ -263,6 +353,12 @@ export function useBuyNow() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   });
+
+  useEffect(() => {
+    if (isConfirmed) {
+      try { window.dispatchEvent(new CustomEvent('auctions:updated')); } catch { }
+    }
+  }, [isConfirmed]);
 
   const buyNow = async (auctionId, buyNowPrice) => {
     try {

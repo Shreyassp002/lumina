@@ -88,11 +88,20 @@ export function useUserListings(address) {
     };
 
     fetchUserListings();
+
+    // Auto refresh on marketplace updates
+    const onUpdated = () => fetchUserListings();
+    try { window.addEventListener('marketplace:updated', onUpdated); } catch { }
+    return () => { try { window.removeEventListener('marketplace:updated', onUpdated); } catch { } };
   }, [address]);
 
   return {
     listings: userListings,
     isLoading,
+    // internal refetch (optional)
+    refetch: () => {
+      try { window.dispatchEvent(new CustomEvent('marketplace:force-refetch')); } catch { }
+    }
   };
 }
 
@@ -102,6 +111,12 @@ export function useListNFT() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   });
+
+  useEffect(() => {
+    if (isConfirmed) {
+      try { window.dispatchEvent(new CustomEvent('marketplace:updated')); } catch { }
+    }
+  }, [isConfirmed]);
 
   const listNFT = async (tokenId, price) => {
     try {
@@ -132,6 +147,12 @@ export function useBuyNFT() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   });
+
+  useEffect(() => {
+    if (isConfirmed) {
+      try { window.dispatchEvent(new CustomEvent('marketplace:updated')); } catch { }
+    }
+  }, [isConfirmed]);
 
   const buyNFT = async (listingId, price) => {
     try {
@@ -164,6 +185,12 @@ export function useCancelListing() {
     hash,
   });
 
+  useEffect(() => {
+    if (isConfirmed) {
+      try { window.dispatchEvent(new CustomEvent('marketplace:updated')); } catch { }
+    }
+  }, [isConfirmed]);
+
   const cancelListing = async (listingId) => {
     try {
       await writeContract({
@@ -193,6 +220,12 @@ export function useUpdateListing() {
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
   });
+
+  useEffect(() => {
+    if (isConfirmed) {
+      try { window.dispatchEvent(new CustomEvent('marketplace:updated')); } catch { }
+    }
+  }, [isConfirmed]);
 
   const updateListing = async (listingId, newPrice) => {
     try {

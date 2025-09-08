@@ -87,7 +87,7 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
         <div className="absolute top-3 right-3">
           <button
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full backdrop-blur-sm transition-colors ${isLiked ? 'bg-emerald-500 text-black' : 'bg-[#0e1518]/80 text-emerald-200 hover:bg-[#0e1518]'
+            className={`p-2 rounded-full backdrop-blur-sm transition-colors cursor-pointer ${isLiked ? 'bg-emerald-500 text-black' : 'bg-[#0e1518]/80 text-emerald-200 hover:bg-[#0e1518]'
               }`}
           >
             <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
@@ -145,7 +145,7 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
             <button
               onClick={handlePurchase}
               disabled={isPurchasing || isConfirming}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-lime-500 text-black text-sm font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center neon-glow"
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-lime-500 text-black text-sm font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center neon-glow cursor-pointer"
             >
               {isPurchasing || isConfirming ? (
                 <>
