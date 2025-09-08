@@ -1,17 +1,40 @@
 'use client';
 
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
 import { LUMINA_MARKETPLACE_ABI, LUMINA_MARKETPLACE_ADDRESS } from '../../abi/luminaMarketplace';
 import { useState, useEffect } from 'react';
 
 // Hook to get active listings
 export function useActiveListings(offset = 0, limit = 20) {
-  const { data: listings, isLoading, refetch } = useReadContract({
-    address: LUMINA_MARKETPLACE_ADDRESS,
-    abi: LUMINA_MARKETPLACE_ABI,
-    functionName: 'getActiveListings',
-    args: [offset, limit],
-  });
+  const [listings, setListings] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const publicClient = usePublicClient();
+
+  const fetchListings = async () => {
+    try {
+      setIsLoading(true);
+      const result = await publicClient.readContract({
+        address: LUMINA_MARKETPLACE_ADDRESS,
+        abi: LUMINA_MARKETPLACE_ABI,
+        functionName: 'getActiveListings',
+        args: [offset, limit],
+      });
+      setListings(result);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
+      setListings(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchListings();
+  }, [offset, limit, publicClient]);
+
+  const refetch = () => {
+    fetchListings();
+  };
 
   return {
     listings,
@@ -38,7 +61,7 @@ export function useUserListings(address) {
         const { data: allListings } = await fetch('/api/contracts/getActiveListings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             contractAddress: LUMINA_MARKETPLACE_ADDRESS,
             offset: 0,
             limit: 1000 // Get all listings
@@ -54,7 +77,7 @@ export function useUserListings(address) {
               listingId: index
             }))
             .filter(listing => listing.seller.toLowerCase() === address.toLowerCase());
-          
+
           setUserListings(userListings);
         }
       } catch (error) {

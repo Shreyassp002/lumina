@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { usePlaceBid, useBuyNow } from '../hooks/useAuction';
+import { useNFTData } from '../hooks/useNFT';
 import { formatEther, parseEther } from 'viem';
 import Link from 'next/link';
 import { Clock, Gavel, Zap, ExternalLink } from 'lucide-react';
@@ -13,9 +14,35 @@ export default function AuctionCard({ auction, currentUser }) {
   const [bidAmount, setBidAmount] = useState('');
   const [isBidding, setIsBidding] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [metadata, setMetadata] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [name, setName] = useState(null);
 
   const { placeBid, isConfirming: isBidConfirming } = usePlaceBid();
   const { buyNow, isConfirming: isBuyConfirming } = useBuyNow();
+  const { tokenURI } = useNFTData(auction.tokenId);
+
+  const resolveIpfs = (uri) => {
+    if (!uri) return null;
+    if (uri.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${uri.replace('ipfs://', '')}`;
+    return uri;
+  };
+
+  useEffect(() => {
+    const loadMd = async () => {
+      try {
+        const httpUri = resolveIpfs(tokenURI);
+        if (!httpUri) return;
+        const res = await fetch(httpUri);
+        if (!res.ok) return;
+        const json = await res.json();
+        setMetadata(json);
+        setName(json?.name || null);
+        setImageUrl(resolveIpfs(json?.image));
+      } catch (_) { }
+    };
+    loadMd();
+  }, [tokenURI]);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -88,20 +115,26 @@ export default function AuctionCard({ auction, currentUser }) {
   const isActive = auction.status === 'active' && !isEnded;
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300">
       {/* Image */}
       <div className="aspect-square relative overflow-hidden">
-        <img
-          src={`https://picsum.photos/400/400?random=${auction.tokenId}`}
-          alt={`NFT #${auction.tokenId}`}
-          className="w-full h-full object-cover"
-        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={name || `NFT #${auction.tokenId}`}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-[#0e1518] flex items-center justify-center text-green-200/60">
+            No image
+          </div>
+        )}
         <div className="absolute top-3 left-3">
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${isActive
-              ? 'bg-green-500 text-white'
-              : isEnded
-                ? 'bg-gray-500 text-white'
-                : 'bg-blue-500 text-white'
+            ? 'bg-emerald-500 text-black'
+            : isEnded
+              ? 'bg-[#0e1518] text-green-200/70'
+              : 'bg-lime-500 text-black'
             }`}>
             {isActive ? 'Live' : isEnded ? 'Ended' : 'Upcoming'}
           </div>
@@ -109,9 +142,9 @@ export default function AuctionCard({ auction, currentUser }) {
         <div className="absolute top-3 right-3">
           <Link
             href={`/nft/${auction.tokenId}`}
-            className="p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
+            className="p-2 bg-[#0e1518]/80 backdrop-blur-sm rounded-full hover:bg-[#0e1518] transition-colors"
           >
-            <ExternalLink className="w-4 h-4 text-gray-600" />
+            <ExternalLink className="w-4 h-4 text-emerald-200" />
           </Link>
         </div>
       </div>
@@ -120,55 +153,55 @@ export default function AuctionCard({ auction, currentUser }) {
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="font-semibold text-gray-900 text-lg">
-              NFT #{auction.tokenId}
+            <h3 className="font-semibold text-emerald-200 text-lg">
+              {name || `NFT #${auction.tokenId}`}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-green-200/70">
               by {auction.seller ? `${auction.seller.slice(0, 6)}...${auction.seller.slice(-4)}` : 'Unknown'}
             </p>
           </div>
           <div className="text-right">
-            <div className="text-sm text-gray-500">Bids</div>
-            <div className="font-semibold text-gray-900">{auction.bidCount}</div>
+            <div className="text-sm text-green-200/70">Bids</div>
+            <div className="font-semibold text-emerald-300">{auction.bidCount}</div>
           </div>
         </div>
 
         {/* Current Bid */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-600">Current Bid</span>
-            <span className="text-sm text-gray-600">Min. Increment</span>
+            <span className="text-sm text-green-200/70">Current Bid</span>
+            <span className="text-sm text-green-200/70">Min. Increment</span>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-xl font-bold text-gray-900">
+            <div className="text-xl font-bold text-emerald-300">
               {formatEther(auction.currentBid || auction.startPrice)} ETH
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-green-200/70">
               {formatEther(auction.minIncrement)} ETH
             </div>
           </div>
           {auction.currentBidder && (
-            <div className="text-sm text-gray-500 mt-1">
+            <div className="text-sm text-green-200/60 mt-1">
               by {auction.currentBidder.slice(0, 6)}...{auction.currentBidder.slice(-4)}
             </div>
           )}
         </div>
 
         {/* Timer */}
-        <div className="flex items-center mb-4 p-3 bg-gray-50 rounded-lg">
-          <Clock className="w-4 h-4 text-gray-500 mr-2" />
-          <span className="text-sm font-medium text-gray-700">
+        <div className="flex items-center mb-4 p-3 bg-[#0e1518] rounded-lg">
+          <Clock className="w-4 h-4 text-green-200/70 mr-2" />
+          <span className="text-sm font-medium text-emerald-200">
             {isEnded ? 'Auction Ended' : `Ends in ${timeLeft}`}
           </span>
         </div>
 
         {/* Buy Now Price */}
         {auction.buyNowPrice && isActive && (
-          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+          <div className="mb-4 p-3 bg-[#0e1518] rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-blue-600 font-medium">Buy Now Price</div>
-                <div className="text-lg font-bold text-blue-700">
+                <div className="text-sm text-emerald-300 font-medium">Buy Now Price</div>
+                <div className="text-lg font-bold text-emerald-300">
                   {formatEther(auction.buyNowPrice)} ETH
                 </div>
               </div>
@@ -176,11 +209,11 @@ export default function AuctionCard({ auction, currentUser }) {
                 <button
                   onClick={handleBuyNow}
                   disabled={isBuyingNow || isBuyConfirming}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-lime-500 text-black text-sm font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center neon-glow"
                 >
                   {isBuyingNow || isBuyConfirming ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></div>
                       {isBuyConfirming ? 'Confirming...' : 'Buying...'}
                     </>
                   ) : (
@@ -199,7 +232,7 @@ export default function AuctionCard({ auction, currentUser }) {
         {isActive && !isOwner && (
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-green-200/80 mb-1">
                 Your Bid (ETH)
               </label>
               <input
@@ -207,17 +240,17 @@ export default function AuctionCard({ auction, currentUser }) {
                 value={bidAmount}
                 onChange={(e) => setBidAmount(e.target.value)}
                 placeholder={`Min: ${formatEther(parseEther(formatEther(auction.currentBid || auction.startPrice)) + parseEther(formatEther(auction.minIncrement)))}`}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-3 py-2 glass-panel rounded-lg focus:outline-none"
               />
             </div>
             <button
               onClick={handleBid}
               disabled={isBidding || isBidConfirming || !bidAmount || isCurrentBidder}
-              className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-lime-500 text-black font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center neon-glow"
             >
               {isBidding || isBidConfirming ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></div>
                   {isBidConfirming ? 'Confirming...' : 'Placing Bid...'}
                 </>
               ) : isCurrentBidder ? (
@@ -233,14 +266,14 @@ export default function AuctionCard({ auction, currentUser }) {
         )}
 
         {isOwner && (
-          <div className="p-3 bg-gray-100 rounded-lg text-center">
-            <p className="text-sm text-gray-600">This is your auction</p>
+          <div className="p-3 bg-[#0e1518] rounded-lg text-center">
+            <p className="text-sm text-green-200/70">This is your auction</p>
           </div>
         )}
 
         {isEnded && (
-          <div className="p-3 bg-gray-100 rounded-lg text-center">
-            <p className="text-sm text-gray-600">
+          <div className="p-3 bg-[#0e1518] rounded-lg text-center">
+            <p className="text-sm text-green-200/70">
               {auction.currentBidder ? 'Auction completed' : 'No bids received'}
             </p>
           </div>

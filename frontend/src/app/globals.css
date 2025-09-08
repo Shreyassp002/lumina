@@ -1,8 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #040607;
+  /* near-black */
+  --foreground: #e6ffec;
+  /* soft mint text */
+  --accent: #00ff88;
+  /* neon green */
+  --accent-2: #00c56e;
+  /* deeper green */
+  --muted: #0e1518;
+  /* dark panel */
+  --muted-2: #0a0f11;
+  /* darker panel */
+  --border: #133027;
+  /* subtle greenish border */
 }
 
 @theme inline {
@@ -14,8 +26,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #040607;
+    --foreground: #e6ffec;
   }
 }
 
@@ -38,25 +50,42 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  .glass-panel {
+    background: linear-gradient(180deg,
+        rgba(14, 21, 24, 0.7) 0%,
+        rgba(10, 15, 17, 0.7) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+  }
 }
 
 @layer utilities {
   .text-gradient {
-    @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-emerald-400 to-lime-400 bg-clip-text text-transparent;
   }
-  
+
   .bg-gradient-primary {
-    @apply bg-gradient-to-r from-purple-600 to-blue-600;
+    @apply bg-gradient-to-r from-emerald-500 to-lime-500;
   }
-  
+
   .shadow-glow {
-    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+    box-shadow: 0 0 24px rgba(0, 255, 136, 0.25);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 0 1px rgba(0, 255, 136, 0.25), 0 0 24px rgba(0, 255, 136, 0.15), inset 0 0 24px rgba(0, 255, 136, 0.05);
+  }
+
+  .accent-ring {
+    box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.35);
   }
 }
