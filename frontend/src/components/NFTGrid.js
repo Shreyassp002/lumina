@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useActiveListings } from '../hooks/useMarketplace';
 import NFTCard from './NFTCard';
@@ -13,6 +13,13 @@ export default function NFTGrid({ searchTerm, filters }) {
 
   // Use custom hook to fetch active listings
   const { listings: activeListings, isLoading, refetch } = useActiveListings(page * 20, 20);
+
+  // Auto-refetch on marketplace updates
+  useEffect(() => {
+    const handler = () => refetch();
+    window.addEventListener('marketplace:updated', handler);
+    return () => window.removeEventListener('marketplace:updated', handler);
+  }, [refetch]);
 
   const loadMore = () => {
     if (!isLoading && hasMore) {

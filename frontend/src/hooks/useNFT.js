@@ -139,7 +139,7 @@ export function useUserNFTs(address) {
         const nfts = ownedIds.map((id, index) => {
           const md = metadataJsons[index];
           const imageUrl = md?.image ? resolveIpfs(md.image) : null;
-          return { tokenId: id, owner: address, tokenData: tokenDatas[index], tokenURI: tokenUris[index], imageUrl };
+          return { tokenId: id, owner: address, tokenData: tokenDatas[index], tokenURI: tokenUris[index], imageUrl, metadata: md };
         });
         setUserNFTs(nfts);
       } catch (error) {
@@ -233,7 +233,7 @@ export function useUserCreatedNFTs(address) {
         const nfts = created.map((x, idx) => {
           const md = metadataJsons[idx];
           const imageUrl = md?.image ? resolveIpfs(md.image) : null;
-          return { tokenId: x.id, owner: null, tokenData: x.data, tokenURI: x.uri, imageUrl };
+          return { tokenId: x.id, owner: null, tokenData: x.data, tokenURI: x.uri, imageUrl, metadata: md };
         });
         setCreatedNFTs(nfts);
       } catch (error) {

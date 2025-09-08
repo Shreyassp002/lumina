@@ -7,18 +7,26 @@ import Layout from '../../components/Layout';
 import AuctionCard from '../../components/AuctionCard';
 import AuctionsDebug from '../../components/AuctionsDebug';
 import { Gavel, Clock, TrendingUp } from 'lucide-react';
+import { formatEther } from 'viem';
 
 export default function AuctionsPage() {
   const { address } = useAccount();
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // all, active, ending-soon, ended
-  const { auctions: allAuctions, isLoading } = useAllAuctions();
+  const { auctions: allAuctions, isLoading, refetch } = useAllAuctions();
 
   useEffect(() => {
     setLoading(isLoading);
     setAuctions(allAuctions || []);
   }, [allAuctions, isLoading]);
+
+  // Auto-refetch on auctions updates (redundant to hook listener but keeps page state in sync)
+  useEffect(() => {
+    const handler = () => refetch();
+    window.addEventListener('auctions:updated', handler);
+    return () => window.removeEventListener('auctions:updated', handler);
+  }, [refetch]);
 
   const filteredAuctions = auctions.filter(auction => {
     const now = Date.now();
@@ -37,7 +45,10 @@ export default function AuctionsPage() {
   });
 
   const activeAuctions = auctions.filter(a => a.status === 'active' && a.endTime > Date.now()).length;
-  const totalVolume = auctions.reduce((sum, a) => sum + parseFloat(a.currentBid || a.startPrice), 0);
+  const totalVolumeWei = auctions.reduce((sum, a) => {
+    const val = a.currentBid && a.currentBid > 0n ? a.currentBid : a.startPrice || 0n;
+    return (typeof sum === 'bigint' ? sum : BigInt(0)) + (typeof val === 'bigint' ? val : BigInt(val || 0));
+  }, 0n);
 
   if (loading) {
     return (
@@ -110,7 +121,7 @@ export default function AuctionsPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-emerald-300">
-                    {totalVolume.toFixed(2)} ETH
+                    {formatEther(totalVolumeWei)} ETH
                   </div>
                   <div className="text-green-200/70">Total Volume</div>
                 </div>

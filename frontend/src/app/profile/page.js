@@ -47,8 +47,7 @@ export default function ProfilePage() {
     try {
       await listNFT(tokenId, price);
       handleCloseModal();
-      // Refetch user stats to update listings
-      window.location.reload(); // Simple refresh for now
+      // Listing confirmations emit marketplace:updated → useUserListings will refresh
     } catch (error) {
       console.error('Listing failed:', error);
     }
@@ -62,13 +61,13 @@ export default function ProfilePage() {
   if (!address) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <User className="w-8 h-8 text-black" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Connect Your Wallet</h2>
-            <p className="text-gray-600">Please connect your wallet to view your profile</p>
+            <h2 className="text-2xl font-bold text-emerald-200 mb-2">Connect Your Wallet</h2>
+            <p className="text-green-200/70">Please connect your wallet to view your profile</p>
           </div>
         </div>
       </Layout>
@@ -227,7 +226,7 @@ export default function ProfilePage() {
                           )}
                           <div className="p-4">
                             <h4 className="font-semibold text-emerald-200 mb-1">
-                              {nft.metadata?.name || `NFT #${nft.tokenId}`}
+                              {nft.metadata?.name || nft.tokenData?.name || `NFT #${nft.tokenId}`}
                             </h4>
                             <p className="text-sm text-green-200/70 mb-2">
                               {nft.tokenData?.category || 'Art'}
@@ -240,14 +239,14 @@ export default function ProfilePage() {
                                 <button
                                   onClick={() => handleOpenModal(nft, 'list')}
                                   disabled={isListing}
-                                  className="px-3 py-1 text-xs bg-gradient-to-r from-emerald-500 to-lime-500 text-black rounded-lg hover:from-emerald-400 hover:to-lime-400 disabled:opacity-50 transition-colors neon-glow"
+                                  className="px-3 py-1 text-xs bg-gradient-to-r from-emerald-500 to-lime-500 text-black rounded-lg hover:from-emerald-400 hover:to-lime-400 disabled:opacity-50 transition-colors neon-glow cursor-pointer"
                                 >
                                   List
                                 </button>
                                 <button
                                   onClick={() => handleOpenModal(nft, 'auction')}
                                   disabled={isCreatingAuction}
-                                  className="px-3 py-1 text-xs bg-gradient-to-r from-emerald-500 to-lime-500 text-black rounded-lg hover:from-emerald-400 hover:to-lime-400 disabled:opacity-50 transition-colors neon-glow"
+                                  className="px-3 py-1 text-xs bg-gradient-to-r from-emerald-500 to-lime-500 text-black rounded-lg hover:from-emerald-400 hover:to-lime-400 disabled:opacity-50 transition-colors neon-glow cursor-pointer"
                                 >
                                   Auction
                                 </button>
@@ -289,7 +288,7 @@ export default function ProfilePage() {
                           )}
                           <div className="p-4">
                             <h4 className="font-semibold text-emerald-200 mb-1">
-                              {nft.metadata?.name || `NFT #${nft.tokenId}`}
+                              {nft.metadata?.name || nft.tokenData?.name || `NFT #${nft.tokenId}`}
                             </h4>
                             <p className="text-sm text-green-200/70 mb-2">
                               {nft.tokenData?.category || 'Art'}

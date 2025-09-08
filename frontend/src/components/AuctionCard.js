@@ -209,7 +209,7 @@ export default function AuctionCard({ auction, currentUser }) {
                 <button
                   onClick={handleBuyNow}
                   disabled={isBuyingNow || isBuyConfirming}
-                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-lime-500 text-black text-sm font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center neon-glow"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-lime-500 text-black text-sm font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center neon-glow cursor-pointer"
                 >
                   {isBuyingNow || isBuyConfirming ? (
                     <>
@@ -246,7 +246,7 @@ export default function AuctionCard({ auction, currentUser }) {
             <button
               onClick={handleBid}
               disabled={isBidding || isBidConfirming || !bidAmount || isCurrentBidder}
-              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-lime-500 text-black font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center neon-glow"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-lime-500 text-black font-semibold rounded-lg hover:from-emerald-400 hover:to-lime-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center neon-glow cursor-pointer"
             >
               {isBidding || isBidConfirming ? (
                 <>
