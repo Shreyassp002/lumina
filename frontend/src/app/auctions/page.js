@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useAllAuctions } from "../../hooks/useAuction";
-import Layout from "../../components/Layout";
+import Layout from "../../components/ui/Layout";
 import {
   AuctionCard,
   AuctionsDebug,
   preloadAuctionComponents,
-} from "../../components/LazyComponents";
+} from "../../components/common/LazyComponents";
 import { Gavel, Clock, TrendingUp } from "lucide-react";
 import { formatEther } from "viem";
 

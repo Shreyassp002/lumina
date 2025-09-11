@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import Layout from "../../components/Layout";
+import Layout from "../../components/ui/Layout";
 import { useUserStats } from "../../hooks/useUserStats";
 import { useCreatorProfile } from "../../hooks/useNFT";
 import { useListNFT } from "../../hooks/useMarketplace";
 import { useCreateAuction } from "../../hooks/useAuction";
-import NFTActionModal from "../../components/NFTActionModal";
+import NFTActionModal from "../../components/nft/NFTActionModal";
 import {
   User,
   Package,

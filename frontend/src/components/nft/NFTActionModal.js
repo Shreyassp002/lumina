@@ -7,7 +7,7 @@ import {
   useAuctionApproval,
   useApproveMarketplace,
   useApproveAuction,
-} from "../hooks/useApproval";
+} from "../../hooks/useApproval";
 import {
   X,
   DollarSign,
@@ -17,7 +17,7 @@ import {
   Shield,
   AlertCircle,
 } from "lucide-react";
-import { LUMINA_MARKETPLACE_ADDRESS } from "../../abi/luminaMarketplace";
+import { LUMINA_MARKETPLACE_ADDRESS } from "../../../abi/luminaMarketplace";
 
 export default function NFTActionModal({
   isOpen,

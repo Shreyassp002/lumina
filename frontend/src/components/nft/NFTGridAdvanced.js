@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useBatchNFTData, useUserNFTs } from "../hooks/useNFT";
-import { NFTImage } from "./ProgressiveImage";
-import { queryKeyFactory } from "../lib/queryKeys";
+import { useBatchNFTData, useUserNFTs } from "../../hooks/useNFT";
+import { NFTImage } from "../common/ProgressiveImage";
+import { queryKeyFactory } from "../../lib/queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
 // Performance monitoring removed
 

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Sparkles, Home, Plus, Gavel, User } from 'lucide-react';
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Sparkles, Home, Plus, Gavel, User } from "lucide-react";
 
 const navigation = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'Marketplace', href: '/marketplace', icon: Sparkles },
-  { name: 'Create', href: '/create', icon: Plus },
-  { name: 'Auctions', href: '/auctions', icon: Gavel },
-  { name: 'Profile', href: '/profile', icon: User },
+  { name: "Home", href: "/", icon: Home },
+  { name: "Marketplace", href: "/marketplace", icon: Sparkles },
+  { name: "Create", href: "/create", icon: Plus },
+  { name: "Auctions", href: "/auctions", icon: Gavel },
+  { name: "Profile", href: "/profile", icon: User },
 ];
 
 export default function Header() {
@@ -39,10 +39,11 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
-                      ? 'text-emerald-300 bg-[#0f1b16] accent-ring'
-                      : 'text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]'
-                    }`}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? "text-emerald-300 bg-[#0f1b16] accent-ring"
+                      : "text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]"
+                  }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{item.name}</span>
@@ -67,10 +68,11 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${isActive
-                      ? 'text-emerald-300 bg-[#0f1b16] accent-ring'
-                      : 'text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]'
-                    }`}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
+                    isActive
+                      ? "text-emerald-300 bg-[#0f1b16] accent-ring"
+                      : "text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]"
+                  }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{item.name}</span>
@@ -83,4 +85,3 @@ export default function Header() {
     </header>
   );
 }
-

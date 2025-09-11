@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useNFTData } from "../hooks/useNFT";
-import { useBuyNFT } from "../hooks/useMarketplace";
+import { useNFTData } from "../../hooks/useNFT";
+import { useBuyNFT } from "../../hooks/useMarketplace";
 import { formatEther } from "viem";
 import Link from "next/link";
 import { Heart, ShoppingCart, ExternalLink } from "lucide-react";

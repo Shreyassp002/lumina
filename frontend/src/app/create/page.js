@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import { useMintNFT } from "../../hooks/useNFT";
-import Layout from "../../components/Layout";
+import Layout from "../../components/ui/Layout";
 import {
   Upload,
   Image as ImageIcon,

@@ -6,8 +6,8 @@ import {
   usePlaceBid,
   useBuyNow,
   useAuctionCountdown,
-} from "../hooks/useAuction";
-import { useNFTData } from "../hooks/useNFT";
+} from "../../hooks/useAuction";
+import { useNFTData } from "../../hooks/useNFT";
 import { formatEther, parseEther } from "viem";
 import Link from "next/link";
 import { Clock, Gavel, Zap, ExternalLink } from "lucide-react";

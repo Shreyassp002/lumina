@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Layout from "../../components/Layout";
+import Layout from "../../components/ui/Layout";
 import {
   MarketplaceGrid,
   MarketplaceDebug,
   preloadMarketplaceComponents,
-} from "../../components/LazyComponents";
-import FilterPanel from "../../components/FilterPanel";
+} from "../../components/common/LazyComponents";
+import FilterPanel from "../../components/marketplace/FilterPanel";
 import { Search, Filter } from "lucide-react";
 
 // Preload marketplace components when this module loads

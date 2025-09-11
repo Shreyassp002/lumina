@@ -1,13 +1,19 @@
-import Layout from '../components/Layout';
-import Link from 'next/link';
-import { ArrowRight, Sparkles, Zap, Shield, Users } from 'lucide-react';
+import Layout from "../components/ui/Layout";
+import Link from "next/link";
+import { ArrowRight, Sparkles, Zap, Shield, Users } from "lucide-react";
 
 export default function Home() {
   return (
     <Layout>
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0" style={{ background: "radial-gradient(1200px 600px at 20% -10%, rgba(0,255,136,0.12), transparent), radial-gradient(1000px 500px at 80% 10%, rgba(0, 200, 110, 0.12), transparent)" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(1200px 600px at 20% -10%, rgba(0,255,136,0.12), transparent), radial-gradient(1000px 500px at 80% 10%, rgba(0, 200, 110, 0.12), transparent)",
+          }}
+        ></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
@@ -52,7 +58,8 @@ export default function Home() {
               Why Choose Lumina?
             </h2>
             <p className="text-xl text-green-200/70 max-w-2xl mx-auto">
-              Built on Somnia&apos;s high-performance blockchain for the ultimate NFT experience
+              Built on Somnia&apos;s high-performance blockchain for the
+              ultimate NFT experience
             </p>
           </div>
 
@@ -61,10 +68,13 @@ export default function Home() {
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mb-6">
                 <Zap className="w-6 h-6 text-black" />
               </div>
-              <h3 className="text-xl font-semibold text-emerald-200 mb-4">Lightning Fast</h3>
+              <h3 className="text-xl font-semibold text-emerald-200 mb-4">
+                Lightning Fast
+              </h3>
               <p className="text-green-200/70">
-                Experience sub-second transaction finality with Somnia&apos;s high-performance blockchain.
-                No more waiting for slow confirmations.
+                Experience sub-second transaction finality with Somnia&apos;s
+                high-performance blockchain. No more waiting for slow
+                confirmations.
               </p>
             </div>
 
@@ -72,10 +82,12 @@ export default function Home() {
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mb-6">
                 <Shield className="w-6 h-6 text-black" />
               </div>
-              <h3 className="text-xl font-semibold text-emerald-200 mb-4">Secure & Reliable</h3>
+              <h3 className="text-xl font-semibold text-emerald-200 mb-4">
+                Secure & Reliable
+              </h3>
               <p className="text-green-200/70">
-                Built with enterprise-grade security. Your NFTs and funds are protected by
-                battle-tested smart contracts and security audits.
+                Built with enterprise-grade security. Your NFTs and funds are
+                protected by battle-tested smart contracts and security audits.
               </p>
             </div>
 
@@ -83,10 +95,12 @@ export default function Home() {
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mb-6">
                 <Users className="w-6 h-6 text-black" />
               </div>
-              <h3 className="text-xl font-semibold text-emerald-200 mb-4">Creator Friendly</h3>
+              <h3 className="text-xl font-semibold text-emerald-200 mb-4">
+                Creator Friendly
+              </h3>
               <p className="text-green-200/70">
-                Fair royalties, low fees, and powerful tools for creators.
-                Focus on your art while we handle the technical complexity.
+                Fair royalties, low fees, and powerful tools for creators. Focus
+                on your art while we handle the technical complexity.
               </p>
             </div>
           </div>
@@ -98,19 +112,27 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">10K+</div>
+              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
+                10K+
+              </div>
               <div className="text-green-200/70">NFTs Created</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">5K+</div>
+              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
+                5K+
+              </div>
               <div className="text-green-200/70">Active Users</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">1M+</div>
+              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
+                1M+
+              </div>
               <div className="text-green-200/70">Volume Traded</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">99.9%</div>
+              <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
+                99.9%
+              </div>
               <div className="text-green-200/70">Uptime</div>
             </div>
           </div>
@@ -124,7 +146,8 @@ export default function Home() {
             Ready to Start Your NFT Journey?
           </h2>
           <p className="text-xl text-black/80 mb-8">
-            Join thousands of creators and collectors on the most advanced NFT marketplace
+            Join thousands of creators and collectors on the most advanced NFT
+            marketplace
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

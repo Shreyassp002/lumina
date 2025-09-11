@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { preloadHooksForRoute } from "../hooks/optimizedImports";
+import { preloadHooksForRoute } from "../../hooks/optimizedImports";
 import {
   preloadMarketplaceComponents,
   preloadAuctionComponents,

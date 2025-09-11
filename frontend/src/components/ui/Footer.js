@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { Sparkles, Twitter, Github, MessageCircle } from 'lucide-react';
+import Link from "next/link";
+import { Sparkles, Twitter, Github, MessageCircle } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -16,16 +16,26 @@ export default function Footer() {
             </Link>
             <p className="text-green-200/70 mb-4 max-w-md">
               Discover, create, and trade NFTs on the Somnia blockchain.
-              Experience the future of digital art with our cutting-edge marketplace.
+              Experience the future of digital art with our cutting-edge
+              marketplace.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+              <a
+                href="#"
+                className="text-green-200/70 hover:text-emerald-300 transition-colors"
+              >
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+              <a
+                href="#"
+                className="text-green-200/70 hover:text-emerald-300 transition-colors"
+              >
                 <Github className="w-5 h-5" />
               </a>
-              <a href="#" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+              <a
+                href="#"
+                className="text-green-200/70 hover:text-emerald-300 transition-colors"
+              >
                 <MessageCircle className="w-5 h-5" />
               </a>
             </div>
@@ -33,25 +43,39 @@ export default function Footer() {
 
           {/* Marketplace */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-emerald-300">Marketplace</h3>
+            <h3 className="text-lg font-semibold mb-4 text-emerald-300">
+              Marketplace
+            </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/marketplace" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <Link
+                  href="/marketplace"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   Browse NFTs
                 </Link>
               </li>
               <li>
-                <Link href="/create" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <Link
+                  href="/create"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   Create NFT
                 </Link>
               </li>
               <li>
-                <Link href="/auctions" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <Link
+                  href="/auctions"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   Auctions
                 </Link>
               </li>
               <li>
-                <Link href="/profile" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <Link
+                  href="/profile"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   My Profile
                 </Link>
               </li>
@@ -60,25 +84,39 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-emerald-300">Support</h3>
+            <h3 className="text-lg font-semibold mb-4 text-emerald-300">
+              Support
+            </h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <a
+                  href="#"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   Help Center
                 </a>
               </li>
               <li>
-                <a href="#" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <a
+                  href="#"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   Documentation
                 </a>
               </li>
               <li>
-                <a href="#" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <a
+                  href="#"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   Contact Us
                 </a>
               </li>
               <li>
-                <a href="#" className="text-green-200/70 hover:text-emerald-300 transition-colors">
+                <a
+                  href="#"
+                  className="text-green-200/70 hover:text-emerald-300 transition-colors"
+                >
                   Terms of Service
                 </a>
               </li>

@@ -14,39 +14,39 @@ const LoadingSpinner = ({ message = "Loading..." }) => (
 
 // Lazy load marketplace components (heavy with TanStack Query)
 export const LazyMarketplaceGrid = lazy(() =>
-  import("./MarketplaceGrid").then((module) => ({
+  import("../marketplace/MarketplaceGrid").then((module) => ({
     default: module.default,
   }))
 );
 
 export const LazyMarketplaceDebug = lazy(() =>
-  import("./MarketplaceDebug").then((module) => ({
+  import("../marketplace/MarketplaceDebug").then((module) => ({
     default: module.default,
   }))
 );
 
 // Lazy load NFT components
 export const LazyNFTGridAdvanced = lazy(() =>
-  import("./NFTGridAdvanced").then((module) => ({
+  import("../nft/NFTGridAdvanced").then((module) => ({
     default: module.default,
   }))
 );
 
 export const LazyNFTCard = lazy(() =>
-  import("./NFTCard").then((module) => ({
+  import("../nft/NFTCard").then((module) => ({
     default: module.default,
   }))
 );
 
 // Lazy load auction components
 export const LazyAuctionCard = lazy(() =>
-  import("./AuctionCard").then((module) => ({
+  import("../auction/AuctionCard").then((module) => ({
     default: module.default,
   }))
 );
 
 export const LazyAuctionsDebug = lazy(() =>
-  import("./AuctionsDebug").then((module) => ({
+  import("../auction/AuctionsDebug").then((module) => ({
     default: module.default,
   }))
 );
@@ -55,7 +55,7 @@ export const LazyAuctionsDebug = lazy(() =>
 
 // Lazy load modal components (only needed when opened)
 export const LazyNFTActionModal = lazy(() =>
-  import("./NFTActionModal").then((module) => ({
+  import("../nft/NFTActionModal").then((module) => ({
     default: module.default,
   }))
 );
@@ -109,20 +109,20 @@ export const NFTActionModal = withLazyLoading(
 // Preload functions for critical components
 export const preloadMarketplaceComponents = () => {
   // Preload marketplace components when user is likely to navigate there
-  import("./MarketplaceGrid");
-  import("./MarketplaceDebug");
+  import("../marketplace/MarketplaceGrid");
+  import("../marketplace/MarketplaceDebug");
 };
 
 export const preloadAuctionComponents = () => {
   // Preload auction components when user is likely to navigate there
-  import("./AuctionCard");
-  import("./AuctionsDebug");
+  import("../auction/AuctionCard");
+  import("../auction/AuctionsDebug");
 };
 
 export const preloadNFTComponents = () => {
   // Preload NFT components when user is likely to need them
-  import("./NFTGridAdvanced");
-  import("./NFTCard");
+  import("../nft/NFTGridAdvanced");
+  import("../nft/NFTCard");
 };
 
 // Performance and offline preload functions removed

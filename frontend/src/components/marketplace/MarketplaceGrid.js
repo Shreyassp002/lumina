@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAccount } from "wagmi";
-import { useInfiniteMarketplaceListings } from "../hooks/useMarketplace";
-import NFTCard from "./NFTCard";
+import { useInfiniteMarketplaceListings } from "../../hooks/useMarketplace";
+import NFTCard from "../nft/NFTCard";
 import { Loader2, RefreshCw, Search, Filter } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 

@@ -1,7 +1,7 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import { Web3Provider } from "../providers/Web3Provider";
-import RoutePreloader from "../components/RoutePreloader";
+import RoutePreloader from "../components/common/RoutePreloader";
 
 const blancGroove = localFont({
   src: [
