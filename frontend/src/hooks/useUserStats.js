@@ -1,84 +1,136 @@
-'use client';
+"use client";
 
-import { useUserNFTs, useUserCreatedNFTs } from './useNFT';
-import { useUserListings } from './useMarketplace';
-import { useUserAuctions } from './useAuction';
-import { useState, useEffect } from 'react';
+import { useUserNFTs, useUserCreatedNFTs } from "./useOptimizedNFT";
+import { useUserListings } from "./useOptimizedMarketplace";
+import { useOptimizedUserAuctions } from "./useOptimizedAuction";
+import { useState, useEffect, useMemo } from "react";
 
 export function useUserStats(address) {
-  const { nfts: ownedNFTs, balance, isLoading: nftsLoading } = useUserNFTs(address);
-  const { nfts: createdNFTs, isLoading: createdLoading } = useUserCreatedNFTs(address);
-  const { listings: userListings, isLoading: listingsLoading } = useUserListings(address);
-  const { auctions: userAuctions, isLoading: auctionsLoading } = useUserAuctions(address);
+  // Use optimized hooks with performance options
+  const { data: ownedNFTs = [], isLoading: nftsLoading } = useUserNFTs(
+    address,
+    {
+      enabled: !!address,
+      includeMetadata: true, // Include metadata to show images in profile
+    }
+  );
+  const { data: createdNFTs = [], isLoading: createdLoading } =
+    useUserCreatedNFTs(address, {
+      enabled: !!address,
+      includeMetadata: true, // Include metadata to show images in profile
+    });
+  const { data: userListings = [], isLoading: listingsLoading } =
+    useUserListings(address);
+  const { data: userAuctions = [], isLoading: auctionsLoading } =
+    useOptimizedUserAuctions(address);
 
-  const [stats, setStats] = useState({
-    owned: 0,
-    created: 0,
-    sold: 0,
-    totalVolume: 0,
-    activeListings: 0,
-    activeAuctions: 0,
-    totalEarnings: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+  // Memoize normalized data to prevent unnecessary recalculations
+  const normalizedData = useMemo(
+    () => ({
+      ownedNFTs: Array.isArray(ownedNFTs) ? ownedNFTs : [],
+      createdNFTs: Array.isArray(createdNFTs) ? createdNFTs : [],
+      userListings: Array.isArray(userListings) ? userListings : [],
+      userAuctions: Array.isArray(userAuctions) ? userAuctions : [],
+    }),
+    [ownedNFTs, createdNFTs, userListings, userAuctions]
+  );
 
-  useEffect(() => {
-    if (!address || nftsLoading || createdLoading || listingsLoading || auctionsLoading) {
-      setIsLoading(nftsLoading || createdLoading || listingsLoading || auctionsLoading);
-      return;
+  // Memoize loading state
+  const isLoading = useMemo(
+    () => nftsLoading || createdLoading || listingsLoading || auctionsLoading,
+    [nftsLoading, createdLoading, listingsLoading, auctionsLoading]
+  );
+
+  // Memoize calculated stats for optimal performance
+  const stats = useMemo(() => {
+    if (!address || isLoading) {
+      return {
+        owned: 0,
+        created: 0,
+        sold: 0,
+        totalVolume: 0,
+        activeListings: 0,
+        activeAuctions: 0,
+        totalEarnings: 0,
+      };
     }
 
-    const calculateStats = async () => {
-      try {
-        // Count owned NFTs
-        const owned = balance || 0;
+    try {
+      const {
+        ownedNFTs: normalizedOwnedNFTs,
+        createdNFTs: normalizedCreatedNFTs,
+        userListings: normalizedUserListings,
+        userAuctions: normalizedUserAuctions,
+      } = normalizedData;
 
-        // Count created NFTs
-        const created = createdNFTs.length || 0;
+      // Count owned NFTs
+      const owned = normalizedOwnedNFTs.length;
 
-        // Count active listings
-        const activeListings = userListings.filter(listing => listing.active).length;
+      // Count created NFTs
+      const created = normalizedCreatedNFTs.length;
 
-        // Count active auctions
-        const now = Date.now();
-        const activeAuctions = userAuctions.filter(auction =>
-          auction.active && auction.endTime > now
-        ).length;
+      // Count active listings (check both active and isActive properties for compatibility)
+      const activeListings = normalizedUserListings.filter(
+        (listing) => listing.active || listing.isActive
+      ).length;
 
-        // Calculate total volume (this would need transaction history in a real app)
-        const totalVolume = 0; // Placeholder - would need to fetch from transaction history
+      // Count active auctions (check status and active properties)
+      const now = Date.now();
+      const activeAuctions = normalizedUserAuctions.filter(
+        (auction) =>
+          (auction.status === "active" || auction.active) &&
+          auction.endTime > now
+      ).length;
 
-        // Calculate total earnings (this would need transaction history in a real app)
-        const totalEarnings = 0; // Placeholder - would need to fetch from transaction history
+      // Calculate total volume from listings (sum of completed sales)
+      const totalVolume = normalizedUserListings
+        .filter((listing) => !listing.active && !listing.isActive) // Sold listings
+        .reduce((sum, listing) => {
+          const price = listing.priceWei || listing.price || 0n;
+          return sum + Number(price);
+        }, 0);
 
-        // Count sold NFTs (this would need transaction history in a real app)
-        const sold = 0; // Placeholder - would need to fetch from transaction history
+      // Calculate total earnings (same as volume for now)
+      const totalEarnings = totalVolume;
 
-        setStats({
-          owned,
-          created,
-          sold,
-          totalVolume,
-          activeListings,
-          activeAuctions,
-          totalEarnings,
-        });
-      } catch (error) {
-        console.error('Error calculating user stats:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      // Count sold NFTs (listings that are no longer active)
+      const sold = normalizedUserListings.filter(
+        (listing) => !listing.active && !listing.isActive
+      ).length;
 
-    calculateStats();
-  }, [address, balance, createdNFTs, userListings, userAuctions, nftsLoading, createdLoading, listingsLoading, auctionsLoading]);
+      return {
+        owned,
+        created,
+        sold,
+        totalVolume,
+        activeListings,
+        activeAuctions,
+        totalEarnings,
+      };
+    } catch (error) {
+      console.error("Error calculating user stats:", error);
+      return {
+        owned: 0,
+        created: 0,
+        sold: 0,
+        totalVolume: 0,
+        activeListings: 0,
+        activeAuctions: 0,
+        totalEarnings: 0,
+      };
+    }
+  }, [address, normalizedData, isLoading]);
 
-  return {
-    stats,
-    ownedNFTs,
-    createdNFTs,
-    userListings,
-    userAuctions,
-    isLoading,
-  };
+  // Return memoized data for optimal performance
+  return useMemo(
+    () => ({
+      stats,
+      ownedNFTs: normalizedData.ownedNFTs,
+      createdNFTs: normalizedData.createdNFTs,
+      userListings: normalizedData.userListings,
+      userAuctions: normalizedData.userAuctions,
+      isLoading,
+    }),
+    [stats, normalizedData, isLoading]
+  );
 }

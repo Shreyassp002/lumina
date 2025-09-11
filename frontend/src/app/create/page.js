@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { useMintNFT } from "../../hooks/useNFT";
+import { useMintNFT } from "../../hooks/useOptimizedNFT";
 import Layout from "../../components/Layout";
 import {
   Upload,
@@ -255,10 +255,21 @@ export default function CreatePage() {
                     onChange={(e) =>
                       handleInputChange("category", e.target.value)
                     }
-                    className="w-full px-4 py-3 glass-panel rounded-lg focus:outline-none"
+                    className="w-full px-4 py-3 glass-panel rounded-lg focus:outline-none text-emerald-200"
+                    style={{
+                      backgroundColor: "rgba(14, 21, 24, 0.8)",
+                      color: "#a7f3d0",
+                    }}
                   >
                     {categories.map((category) => (
-                      <option key={category.value} value={category.value}>
+                      <option
+                        key={category.value}
+                        value={category.value}
+                        style={{
+                          backgroundColor: "#0e1518",
+                          color: "#a7f3d0",
+                        }}
+                      >
                         {category.label}
                       </option>
                     ))}

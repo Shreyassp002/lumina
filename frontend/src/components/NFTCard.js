@@ -1,57 +1,63 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
-import { useNFTData } from '../hooks/useNFT';
-import { useBuyNFT } from '../hooks/useMarketplace';
-import { formatEther } from 'viem';
-import Link from 'next/link';
-import { Heart, ShoppingCart, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { useNFTData } from "../hooks/useOptimizedNFT";
+import { useBuyNFT } from "../hooks/useOptimizedMarketplace";
+import { formatEther } from "viem";
+import Link from "next/link";
+import { Heart, ShoppingCart, ExternalLink } from "lucide-react";
 
-export default function NFTCard({ tokenId, price, seller, listingId }) {
+export default function NFTCard({
+  tokenId,
+  price,
+  seller,
+  listingId,
+  isOptimistic = false,
+}) {
   const { address } = useAccount();
   const [isLiked, setIsLiked] = useState(false);
   const [metadata, setMetadata] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const [name, setName] = useState(null);
 
-  // Use custom hooks for contract interactions
-  const { tokenURI, tokenData, owner, isLoading: nftLoading } = useNFTData(tokenId);
-  const { buyNFT, isPending: isPurchasing, isConfirming, isConfirmed } = useBuyNFT();
+  // Use optimized hook for contract interactions
+  const {
+    data: nftData,
+    isLoading: nftLoading,
+    error: nftError,
+  } = useNFTData(tokenId, { includeMetadata: true });
+  const {
+    buyNFT,
+    isPending: isPurchasing,
+    isConfirming,
+    isConfirmed,
+  } = useBuyNFT();
 
   // Resolve ipfs:// to https
   const resolveIpfs = (uri) => {
     if (!uri) return null;
-    if (uri.startsWith('ipfs://')) return `https://ipfs.io/ipfs/${uri.replace('ipfs://', '')}`;
+    if (uri.startsWith("ipfs://"))
+      return `https://ipfs.io/ipfs/${uri.replace("ipfs://", "")}`;
     return uri;
   };
 
-  // Fetch metadata JSON from tokenURI
+  // Extract data from optimized hook response
   useEffect(() => {
-    const fetchMetadata = async () => {
-      try {
-        const httpUri = resolveIpfs(tokenURI);
-        if (!httpUri) return;
-        const res = await fetch(httpUri);
-        if (!res.ok) return;
-        const json = await res.json();
-        setMetadata(json);
-        setName(json?.name || null);
-        setImageUrl(resolveIpfs(json?.image));
-      } catch (e) {
-        // ignore
-      }
-    };
-    fetchMetadata();
-  }, [tokenURI]);
+    if (nftData) {
+      setMetadata(nftData.metadata);
+      setName(nftData.name || nftData.metadata?.name || null);
+      setImageUrl(nftData.imageUrl || resolveIpfs(nftData.metadata?.image));
+    }
+  }, [nftData]);
 
   const handlePurchase = async () => {
     if (!address) return;
 
     try {
-      await buyNFT(listingId, price);
+      await buyNFT(listingId, price, address);
     } catch (error) {
-      console.error('Purchase failed:', error);
+      console.error("Purchase failed:", error);
     }
   };
 
@@ -70,7 +76,11 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
   }
 
   return (
-    <div className="glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300 group">
+    <div
+      className={`glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300 group ${
+        isOptimistic ? "opacity-75 border border-emerald-400/50" : ""
+      }`}
+    >
       {/* Image */}
       <div className="aspect-square relative overflow-hidden">
         {imageUrl ? (
@@ -87,16 +97,26 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
         <div className="absolute top-3 right-3">
           <button
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full backdrop-blur-sm transition-colors cursor-pointer ${isLiked ? 'bg-emerald-500 text-black' : 'bg-[#0e1518]/80 text-emerald-200 hover:bg-[#0e1518]'
-              }`}
+            className={`p-2 rounded-full backdrop-blur-sm transition-colors cursor-pointer ${
+              isLiked
+                ? "bg-emerald-500 text-black"
+                : "bg-[#0e1518]/80 text-emerald-200 hover:bg-[#0e1518]"
+            }`}
           >
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+            <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
           </button>
         </div>
-        {tokenData?.isVerifiedCreator && (
+        {nftData?.tokenData?.isVerifiedCreator && (
           <div className="absolute top-3 left-3">
             <div className="px-2 py-1 bg-emerald-500 text-black text-xs font-semibold rounded-full">
               Verified
+            </div>
+          </div>
+        )}
+        {isOptimistic && (
+          <div className="absolute bottom-3 left-3">
+            <div className="px-2 py-1 bg-yellow-500/80 text-black text-xs font-semibold rounded-full">
+              Pending
             </div>
           </div>
         )}
@@ -117,14 +137,19 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
         </div>
 
         <p className="text-sm text-green-200/70 mb-3 line-clamp-2">
-          {metadata?.category || tokenData?.category || 'Digital Art'}
+          {metadata?.category || nftData?.tokenData?.category || "Digital Art"}
         </p>
 
         {/* Creator */}
         <div className="flex items-center mb-3">
           <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-full mr-2"></div>
           <span className="text-sm text-green-200/70 truncate">
-            {tokenData?.creator ? `${tokenData.creator.slice(0, 6)}...${tokenData.creator.slice(-4)}` : 'Unknown'}
+            {nftData?.tokenData?.creator
+              ? `${nftData.tokenData.creator.slice(
+                  0,
+                  6
+                )}...${nftData.tokenData.creator.slice(-4)}`
+              : "Unknown"}
           </span>
         </div>
 
@@ -134,9 +159,9 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
             <div className="text-lg font-bold text-emerald-300">
               {formatEther(price)} ETH
             </div>
-            {tokenData?.royaltyBps && (
+            {nftData?.tokenData?.royaltyBps && (
               <div className="text-xs text-green-200/60">
-                {tokenData.royaltyBps / 100}% royalty
+                {nftData.tokenData.royaltyBps / 100}% royalty
               </div>
             )}
           </div>
@@ -150,7 +175,7 @@ export default function NFTCard({ tokenId, price, seller, listingId }) {
               {isPurchasing || isConfirming ? (
                 <>
                   <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2"></div>
-                  {isConfirming ? 'Confirming...' : 'Purchasing...'}
+                  {isConfirming ? "Confirming..." : "Purchasing..."}
                 </>
               ) : (
                 <>

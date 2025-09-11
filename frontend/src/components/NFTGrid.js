@@ -1,59 +1,36 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
-import { useActiveListings } from '../hooks/useMarketplace';
-import NFTCard from './NFTCard';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { useInfiniteMarketplaceListings } from "../hooks/useOptimizedMarketplace";
+import NFTCard from "./NFTCard";
+import { Loader2, RefreshCw } from "lucide-react";
 
 export default function NFTGrid({ searchTerm, filters }) {
   const { address } = useAccount();
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
 
-  // Use custom hook to fetch active listings
-  const { listings: activeListings, isLoading, refetch } = useActiveListings(page * 20, 20);
+  // Use infinite marketplace listings hook
+  const { data, isLoading, refetch, fetchNextPage, hasNextPage } =
+    useInfiniteMarketplaceListings(20);
 
   // Auto-refetch on marketplace updates
   useEffect(() => {
     const handler = () => refetch();
-    window.addEventListener('marketplace:updated', handler);
-    return () => window.removeEventListener('marketplace:updated', handler);
+    window.addEventListener("marketplace:updated", handler);
+    return () => window.removeEventListener("marketplace:updated", handler);
   }, [refetch]);
 
   const loadMore = () => {
-    if (!isLoading && hasMore) {
-      setPage(prev => prev + 1);
+    if (!isLoading && hasNextPage) {
+      fetchNextPage();
     }
   };
 
-  // Process listings data
-  const processedListings = activeListings ? (() => {
-    console.log('Raw activeListings:', activeListings);
-    const [listingData, tokenIds] = activeListings;
-    console.log('Listing data:', listingData);
-    console.log('Token IDs:', tokenIds);
-
-    if (listingData && tokenIds && Array.isArray(listingData) && Array.isArray(tokenIds)) {
-      const processed = listingData.map((listing, index) => {
-        const priceWei = typeof listing.price === 'bigint' ? listing.price : BigInt(String(listing.price));
-        return {
-          ...listing,
-          // Keep on-chain tokenId from listing; second array contains listing IDs
-          tokenId: listing.tokenId,
-          listingId: tokenIds[index],
-          priceWei,
-        };
-      });
-      console.log('Processed listings:', processed);
-      return processed;
-    }
-    console.log('No valid listing data found');
-    return [];
-  })() : [];
+  // Process listings data from infinite query
+  const processedListings = data?.pages?.flat() || [];
 
   // Filter listings based on search and filters
-  const filteredListings = processedListings.filter(listing => {
+  const filteredListings = processedListings.filter((listing) => {
     // Search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
@@ -89,7 +66,9 @@ export default function NFTGrid({ searchTerm, filters }) {
       <div className="text-center py-12">
         <div className="text-green-200/70 text-lg mb-4">No NFTs found</div>
         <p className="text-green-200/60">
-          {searchTerm ? 'Try adjusting your search terms' : 'No active listings at the moment'}
+          {searchTerm
+            ? "Try adjusting your search terms"
+            : "No active listings at the moment"}
         </p>
       </div>
     );
@@ -107,7 +86,9 @@ export default function NFTGrid({ searchTerm, filters }) {
           disabled={isLoading}
           className="flex items-center px-4 py-2 text-sm glass-panel rounded-lg hover:neon-glow transition-colors disabled:opacity-50"
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+          />
           Refresh
         </button>
       </div>
@@ -125,7 +106,7 @@ export default function NFTGrid({ searchTerm, filters }) {
       </div>
 
       {/* Load More Button */}
-      {hasMore && (
+      {hasNextPage && (
         <div className="text-center mt-12">
           <button
             onClick={loadMore}
@@ -138,7 +119,7 @@ export default function NFTGrid({ searchTerm, filters }) {
                 Loading...
               </>
             ) : (
-              'Load More'
+              "Load More"
             )}
           </button>
         </div>

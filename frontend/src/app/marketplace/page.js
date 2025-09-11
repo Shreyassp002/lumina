@@ -1,19 +1,25 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Layout from '../../components/Layout';
-import NFTGrid from '../../components/NFTGrid';
-import FilterPanel from '../../components/FilterPanel';
-import MarketplaceDebug from '../../components/MarketplaceDebug';
-import { Search, Filter } from 'lucide-react';
+import { useState, useEffect } from "react";
+import Layout from "../../components/Layout";
+import {
+  MarketplaceGrid,
+  MarketplaceDebug,
+  preloadMarketplaceComponents,
+} from "../../components/LazyComponents";
+import FilterPanel from "../../components/FilterPanel";
+import { Search, Filter } from "lucide-react";
+
+// Preload marketplace components when this module loads
+preloadMarketplaceComponents();
 
 export default function Marketplace() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-    category: 'all',
+    category: "all",
     priceRange: [0, 1000],
     verifiedOnly: false,
-    sortBy: 'newest'
+    sortBy: "newest",
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -28,7 +34,8 @@ export default function Marketplace() {
                 NFT Marketplace
               </h1>
               <p className="text-xl text-green-200/70 max-w-2xl mx-auto">
-                Discover unique digital art and collectibles from talented creators around the world
+                Discover unique digital art and collectibles from talented
+                creators around the world
               </p>
             </div>
           </div>
@@ -60,7 +67,7 @@ export default function Marketplace() {
           </div>
 
           {/* Filter Panel */}
-          <div className={`mt-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <div className={`mt-6 ${showFilters ? "block" : "hidden lg:block"}`}>
             <FilterPanel filters={filters} onFiltersChange={setFilters} />
           </div>
         </div>
@@ -72,13 +79,14 @@ export default function Marketplace() {
 
         {/* NFT Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-          <NFTGrid
+          <MarketplaceGrid
             searchTerm={searchTerm}
             filters={filters}
+            showFilters={showFilters}
+            onFiltersChange={setFilters}
           />
         </div>
       </div>
     </Layout>
   );
 }
-

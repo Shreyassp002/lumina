@@ -1,53 +1,55 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
-import { useAllAuctions } from '../../hooks/useAuction';
-import Layout from '../../components/Layout';
-import AuctionCard from '../../components/AuctionCard';
-import AuctionsDebug from '../../components/AuctionsDebug';
-import { Gavel, Clock, TrendingUp } from 'lucide-react';
-import { formatEther } from 'viem';
+import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { useOptimizedAllAuctions } from "../../hooks/useOptimizedAuction";
+import Layout from "../../components/Layout";
+import {
+  AuctionCard,
+  AuctionsDebug,
+  preloadAuctionComponents,
+} from "../../components/LazyComponents";
+import { Gavel, Clock, TrendingUp } from "lucide-react";
+import { formatEther } from "viem";
+
+// Preload auction components when this module loads
+preloadAuctionComponents();
 
 export default function AuctionsPage() {
   const { address } = useAccount();
-  const [auctions, setAuctions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, active, ending-soon, ended
-  const { auctions: allAuctions, isLoading, refetch } = useAllAuctions();
+  const [filter, setFilter] = useState("all"); // all, active, ending-soon, ended
+  const { data: auctions = [], isLoading: loading } = useOptimizedAllAuctions();
 
-  useEffect(() => {
-    setLoading(isLoading);
-    setAuctions(allAuctions || []);
-  }, [allAuctions, isLoading]);
-
-  // Auto-refetch on auctions updates (redundant to hook listener but keeps page state in sync)
-  useEffect(() => {
-    const handler = () => refetch();
-    window.addEventListener('auctions:updated', handler);
-    return () => window.removeEventListener('auctions:updated', handler);
-  }, [refetch]);
-
-  const filteredAuctions = auctions.filter(auction => {
+  const filteredAuctions = auctions.filter((auction) => {
     const now = Date.now();
     const timeLeft = auction.endTime - now;
 
     switch (filter) {
-      case 'active':
-        return auction.status === 'active' && timeLeft > 0;
-      case 'ending-soon':
-        return auction.status === 'active' && timeLeft > 0 && timeLeft < 60 * 60 * 1000; // Less than 1 hour
-      case 'ended':
-        return auction.status === 'ended' || timeLeft <= 0;
+      case "active":
+        return auction.status === "active" && timeLeft > 0;
+      case "ending-soon":
+        return (
+          auction.status === "active" &&
+          timeLeft > 0 &&
+          timeLeft < 60 * 60 * 1000
+        ); // Less than 1 hour
+      case "ended":
+        return auction.status === "ended" || timeLeft <= 0;
       default:
         return true;
     }
   });
 
-  const activeAuctions = auctions.filter(a => a.status === 'active' && a.endTime > Date.now()).length;
+  const activeAuctions = auctions.filter(
+    (a) => a.status === "active" && a.endTime > Date.now()
+  ).length;
   const totalVolumeWei = auctions.reduce((sum, a) => {
-    const val = a.currentBid && a.currentBid > 0n ? a.currentBid : a.startPrice || 0n;
-    return (typeof sum === 'bigint' ? sum : BigInt(0)) + (typeof val === 'bigint' ? val : BigInt(val || 0));
+    const val =
+      a.currentBid && a.currentBid > 0n ? a.currentBid : a.startPrice || 0n;
+    return (
+      (typeof sum === "bigint" ? sum : BigInt(0)) +
+      (typeof val === "bigint" ? val : BigInt(val || 0))
+    );
   }, 0n);
 
   if (loading) {
@@ -74,7 +76,8 @@ export default function AuctionsPage() {
                 NFT Auctions
               </h1>
               <p className="text-xl text-green-200/70 max-w-2xl mx-auto">
-                Bid on unique NFTs and discover rare digital collectibles through our auction system
+                Bid on unique NFTs and discover rare digital collectibles
+                through our auction system
               </p>
             </div>
           </div>
@@ -94,7 +97,9 @@ export default function AuctionsPage() {
                   <Gavel className="w-6 h-6 text-black" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-emerald-300">{activeAuctions}</div>
+                  <div className="text-2xl font-bold text-emerald-300">
+                    {activeAuctions}
+                  </div>
                   <div className="text-green-200/70">Active Auctions</div>
                 </div>
               </div>
@@ -107,7 +112,13 @@ export default function AuctionsPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-emerald-300">
-                    {auctions.filter(a => a.status === 'active' && a.endTime - Date.now() < 60 * 60 * 1000).length}
+                    {
+                      auctions.filter(
+                        (a) =>
+                          a.status === "active" &&
+                          a.endTime - Date.now() < 60 * 60 * 1000
+                      ).length
+                    }
                   </div>
                   <div className="text-green-200/70">Ending Soon</div>
                 </div>
@@ -132,18 +143,19 @@ export default function AuctionsPage() {
           {/* Filter Tabs */}
           <div className="flex space-x-1 glass-panel p-1 rounded-lg mb-8">
             {[
-              { key: 'all', label: 'All Auctions' },
-              { key: 'active', label: 'Active' },
-              { key: 'ending-soon', label: 'Ending Soon' },
-              { key: 'ended', label: 'Ended' }
+              { key: "all", label: "All Auctions" },
+              { key: "active", label: "Active" },
+              { key: "ending-soon", label: "Ending Soon" },
+              { key: "ended", label: "Ended" },
             ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${filter === tab.key
-                  ? 'bg-[#0e1518] text-emerald-300 accent-ring'
-                  : 'text-green-200/70 hover:text-emerald-200'
-                  }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === tab.key
+                    ? "bg-[#0e1518] text-emerald-300 accent-ring"
+                    : "text-green-200/70 hover:text-emerald-200"
+                }`}
               >
                 {tab.label}
               </button>
@@ -154,12 +166,13 @@ export default function AuctionsPage() {
           {filteredAuctions.length === 0 ? (
             <div className="text-center py-12">
               <Gavel className="w-16 h-16 text-green-200/40 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-emerald-200 mb-2">No auctions found</h3>
+              <h3 className="text-lg font-medium text-emerald-200 mb-2">
+                No auctions found
+              </h3>
               <p className="text-green-200/70">
-                {filter === 'all'
-                  ? 'No auctions are currently available'
-                  : `No ${filter.replace('-', ' ')} auctions found`
-                }
+                {filter === "all"
+                  ? "No auctions are currently available"
+                  : `No ${filter.replace("-", " ")} auctions found`}
               </p>
             </div>
           ) : (
