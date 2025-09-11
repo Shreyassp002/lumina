@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import {
-  useOptimizedPlaceBid,
-  useOptimizedBuyNow,
+  usePlaceBid,
+  useBuyNow,
   useAuctionCountdown,
-} from "../hooks/useOptimizedAuction";
-import { useOptimizedNFTData } from "../hooks/useOptimizedNFT";
+} from "../hooks/useAuction";
+import { useNFTData } from "../hooks/useNFT";
 import { formatEther, parseEther } from "viem";
 import Link from "next/link";
 import { Clock, Gavel, Zap, ExternalLink } from "lucide-react";
@@ -22,16 +22,16 @@ export default function AuctionCard({ auction, currentUser }) {
     placeBid,
     isPending: isBidPending,
     isConfirming: isBidConfirming,
-  } = useOptimizedPlaceBid();
+  } = usePlaceBid();
   const {
     buyNow,
     isPending: isBuyPending,
     isConfirming: isBuyConfirming,
-  } = useOptimizedBuyNow();
+  } = useBuyNow();
   const { timeLeft, isEnded } = useAuctionCountdown(auction);
 
-  // Use optimized NFT data hook
-  const { data: nftData, isLoading: isNFTLoading } = useOptimizedNFTData(
+  // Use NFT data hook
+  const { data: nftData, isLoading: isNFTLoading } = useNFTData(
     auction.tokenId
   );
 

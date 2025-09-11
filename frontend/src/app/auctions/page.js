@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useOptimizedAllAuctions } from "../../hooks/useOptimizedAuction";
+import { useAllAuctions } from "../../hooks/useAuction";
 import Layout from "../../components/Layout";
 import {
   AuctionCard,
@@ -18,7 +18,7 @@ preloadAuctionComponents();
 export default function AuctionsPage() {
   const { address } = useAccount();
   const [filter, setFilter] = useState("all"); // all, active, ending-soon, ended
-  const { data: auctions = [], isLoading: loading } = useOptimizedAllAuctions();
+  const { data: auctions = [], isLoading: loading } = useAllAuctions();
 
   const filteredAuctions = auctions.filter((auction) => {
     const now = Date.now();

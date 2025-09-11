@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useAccount } from "wagmi";
 import Layout from "../../components/Layout";
 import { useUserStats } from "../../hooks/useUserStats";
-import { useCreatorProfile } from "../../hooks/useOptimizedNFT";
-import { useListNFT } from "../../hooks/useOptimizedMarketplace";
-import { useOptimizedCreateAuction } from "../../hooks/useOptimizedAuction";
+import { useCreatorProfile } from "../../hooks/useNFT";
+import { useListNFT } from "../../hooks/useMarketplace";
+import { useCreateAuction } from "../../hooks/useAuction";
 import NFTActionModal from "../../components/NFTActionModal";
 import {
   User,
@@ -34,8 +34,7 @@ export default function ProfilePage() {
   const { data: creatorProfile, isLoading: profileLoading } =
     useCreatorProfile(address);
   const { listNFT, isPending: isListing } = useListNFT();
-  const { createAuction, isPending: isCreatingAuction } =
-    useOptimizedCreateAuction();
+  const { createAuction, isPending: isCreatingAuction } = useCreateAuction();
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);

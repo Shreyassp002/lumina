@@ -102,7 +102,7 @@ export function ProgressiveImage({
 }
 
 /**
- * NFT Image Component with optimized loading
+ * NFT Image Component with progressive loading
  * Specifically designed for NFT images with IPFS support
  */
 export function NFTImage({

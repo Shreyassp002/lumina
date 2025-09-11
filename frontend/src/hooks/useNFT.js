@@ -13,7 +13,6 @@ import {
   usePublicClient,
 } from "wagmi";
 import { LUMINA_NFT_ABI, LUMINA_NFT_ADDRESS } from "../../abi/luminaNft";
-import { useNetworkStatus } from "./useNetworkStatus";
 import { queryKeyFactory } from "../lib/queryKeys";
 import { cacheStrategies } from "../lib/queryClientOptimized";
 import { useState, useCallback, useEffect } from "react";
@@ -32,7 +31,7 @@ const getPerformanceHooks = async () => {
 };
 
 /**
- * Hook to get user's NFT balance with optimized caching
+ * Hook to get user's NFT balance with intelligent caching
  */
 export function useUserNFTBalance(address) {
   return useReadContract({
@@ -140,23 +139,16 @@ export function useNFTMetadata(tokenURI, options = {}) {
 }
 
 /**
- * Hook to get user's owned NFTs with optimized batch fetching
+ * Hook to get user's owned NFTs with efficient batch fetching
  */
 export function useUserNFTs(address, options = {}) {
   const { enabled = true, includeMetadata = true } = options;
   const publicClient = usePublicClient();
-  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeyFactory.nfts.byOwner(address),
     queryFn: async () => {
       if (!address || !publicClient) return [];
-
-      // Return empty array when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping user NFTs fetch");
-        return [];
-      }
 
       try {
         // Get current token counter
@@ -271,31 +263,23 @@ export function useUserNFTs(address, options = {}) {
         throw error;
       }
     },
-    enabled: enabled && !!address && !!publicClient && isOnline,
+    enabled: enabled && !!address && !!publicClient,
     ...cacheStrategies.userBalances,
-    refetchOnWindowFocus: isOnline,
     refetchOnReconnect: true,
   });
 }
 
 /**
- * Hook to get user's created NFTs with optimized batch fetching
+ * Hook to get user's created NFTs with efficient batch fetching
  */
 export function useUserCreatedNFTs(address, options = {}) {
   const { enabled = true, includeMetadata = true } = options;
   const publicClient = usePublicClient();
-  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeyFactory.nfts.byCreator(address),
     queryFn: async () => {
       if (!address || !publicClient) return [];
-
-      // Return empty array when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping user created NFTs fetch");
-        return [];
-      }
 
       try {
         // Get current token counter
@@ -392,9 +376,8 @@ export function useUserCreatedNFTs(address, options = {}) {
         throw error;
       }
     },
-    enabled: enabled && !!address && !!publicClient && isOnline,
+    enabled: enabled && !!address && !!publicClient,
     ...cacheStrategies.userBalances,
-    refetchOnWindowFocus: isOnline,
     refetchOnReconnect: true,
   });
 }
@@ -619,8 +602,8 @@ export function useMintNFT() {
   };
 }
 
-// Alias for backward compatibility
-export const useOptimizedNFTData = useNFTData;
+// Main NFT data hook
+// useNFTData is the primary export
 
 /**
  * Hook to update creator profile with optimistic updates

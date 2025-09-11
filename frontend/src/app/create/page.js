@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { useMintNFT } from "../../hooks/useOptimizedNFT";
+import { useMintNFT } from "../../hooks/useNFT";
 import Layout from "../../components/Layout";
 import {
   Upload,

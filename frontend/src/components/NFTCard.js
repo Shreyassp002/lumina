@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useNFTData } from "../hooks/useOptimizedNFT";
-import { useBuyNFT } from "../hooks/useOptimizedMarketplace";
+import { useNFTData } from "../hooks/useNFT";
+import { useBuyNFT } from "../hooks/useMarketplace";
 import { formatEther } from "viem";
 import Link from "next/link";
 import { Heart, ShoppingCart, ExternalLink } from "lucide-react";
@@ -21,7 +21,7 @@ export default function NFTCard({
   const [imageUrl, setImageUrl] = useState(null);
   const [name, setName] = useState(null);
 
-  // Use optimized hook for contract interactions
+  // Use hook for contract interactions
   const {
     data: nftData,
     isLoading: nftLoading,
@@ -42,7 +42,7 @@ export default function NFTCard({
     return uri;
   };
 
-  // Extract data from optimized hook response
+  // Extract data from hook response
   useEffect(() => {
     if (nftData) {
       setMetadata(nftData.metadata);

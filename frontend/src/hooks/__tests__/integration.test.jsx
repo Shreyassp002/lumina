@@ -1,5 +1,5 @@
 /**
- * Integration test to verify the optimized NFT hooks work correctly
+ * Integration test to verify the NFT hooks work correctly
  */
 
 import { describe, it, expect } from "vitest";

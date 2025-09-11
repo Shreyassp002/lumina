@@ -18,7 +18,6 @@ import {
 } from "../../abi/luminaAuction";
 import { queryKeyFactory } from "../lib/queryKeys";
 import { cacheStrategies } from "../lib/queryClient";
-import { useNetworkStatus } from "./useNetworkStatus";
 import {
   invalidateAuctionQueries,
   batchInvalidateAfterTransaction,
@@ -28,19 +27,12 @@ import { useState, useEffect, useCallback } from "react";
 // Performance monitoring hooks removed
 
 // Hook to get auction count with TanStack Query
-export function useOptimizedAuctionCount() {
+export function useAuctionCount() {
   const publicClient = usePublicClient();
-  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeyFactory.auctions.count(),
     queryFn: async () => {
-      // Return 0 when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping auction count fetch");
-        return 0;
-      }
-
       const count = await publicClient.readContract({
         address: LUMINA_AUCTION_ADDRESS,
         abi: LUMINA_AUCTION_ABI,
@@ -49,28 +41,20 @@ export function useOptimizedAuctionCount() {
       return Number(count || 0);
     },
     ...cacheStrategies.auctionData,
-    refetchOnWindowFocus: isOnline,
     refetchOnReconnect: true,
   });
 }
 
 // Hook to get individual auction data with real-time updates
-export function useOptimizedAuctionData(auctionId) {
+export function useAuctionData(auctionId) {
   const publicClient = usePublicClient();
   const queryClient = useQueryClient();
-  const { isOnline } = useNetworkStatus();
   // Performance monitoring removed
 
   const query = useQuery({
     queryKey: queryKeyFactory.auctions.byId(auctionId),
     queryFn: async () => {
       if (!auctionId) return null;
-
-      // Return null when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping auction data fetch");
-        return null;
-      }
 
       const endInteraction = recordInteraction("fetchAuctionData");
 
@@ -167,20 +151,13 @@ export function useOptimizedAuctionData(auctionId) {
 }
 
 // Hook to get all active auctions with real-time updates
-export function useOptimizedAllAuctions() {
+export function useAllAuctions() {
   const publicClient = usePublicClient();
   const queryClient = useQueryClient();
-  const { isOnline } = useNetworkStatus();
 
   const query = useQuery({
     queryKey: queryKeyFactory.auctions.active(),
     queryFn: async () => {
-      // Return empty array when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping auctions fetch");
-        return [];
-      }
-
       try {
         const currentAuctionId = await publicClient.readContract({
           address: LUMINA_AUCTION_ADDRESS,
@@ -258,7 +235,7 @@ export function useOptimizedAllAuctions() {
         return [];
       }
     },
-    enabled: !!publicClient && isOnline,
+    enabled: !!publicClient,
     ...cacheStrategies.auctionData,
   });
 
@@ -311,21 +288,14 @@ export function useOptimizedAllAuctions() {
 }
 
 // Hook to get user's auctions with real-time updates
-export function useOptimizedUserAuctions(address) {
+export function useUserAuctions(address) {
   const publicClient = usePublicClient();
   const queryClient = useQueryClient();
-  const { isOnline } = useNetworkStatus();
 
   const query = useQuery({
     queryKey: queryKeyFactory.auctions.userAuctions(address),
     queryFn: async () => {
       if (!address) return [];
-
-      // Return empty array when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping user auctions fetch");
-        return [];
-      }
 
       try {
         const currentAuctionId = await publicClient.readContract({
@@ -387,7 +357,7 @@ export function useOptimizedUserAuctions(address) {
         return [];
       }
     },
-    enabled: !!address && !!publicClient && isOnline,
+    enabled: !!address && !!publicClient,
     ...cacheStrategies.auctionData,
   });
 
@@ -411,7 +381,7 @@ export function useOptimizedUserAuctions(address) {
 }
 
 // Hook to create auction with optimistic updates
-export function useOptimizedCreateAuction() {
+export function useCreateAuction() {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
@@ -467,7 +437,7 @@ export function useOptimizedCreateAuction() {
 }
 
 // Hook to place bid with optimistic updates
-export function useOptimizedPlaceBid() {
+export function usePlaceBid() {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
@@ -530,7 +500,7 @@ export function useOptimizedPlaceBid() {
 }
 
 // Hook to buy now with optimistic updates
-export function useOptimizedBuyNow() {
+export function useBuyNow() {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
@@ -592,7 +562,7 @@ export function useOptimizedBuyNow() {
 }
 
 // Hook to settle auction
-export function useOptimizedSettleAuction() {
+export function useSettleAuction() {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
@@ -634,7 +604,7 @@ export function useOptimizedSettleAuction() {
 }
 
 // Hook to cancel auction
-export function useOptimizedCancelAuction() {
+export function useCancelAuction() {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({

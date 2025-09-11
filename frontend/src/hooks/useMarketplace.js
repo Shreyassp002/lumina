@@ -16,7 +16,6 @@ import {
   LUMINA_MARKETPLACE_ADDRESS,
 } from "../../abi/luminaMarketplace";
 import { queryKeys, cacheStrategies } from "../lib/queryClientOptimized";
-import { useNetworkStatus } from "./useNetworkStatus";
 import {
   invalidateMarketplaceQueries,
   setOptimisticData,
@@ -74,7 +73,6 @@ const fetchMarketplaceListings = async (
 // Hook for infinite scroll marketplace listings with TanStack Query
 export function useInfiniteMarketplaceListings(limit = 20) {
   const publicClient = usePublicClient();
-  const { isOnline } = useNetworkStatus();
 
   // Use lazy-loaded performance hooks
   const recordInteraction = async (name) => {
@@ -90,12 +88,6 @@ export function useInfiniteMarketplaceListings(limit = 20) {
   return useInfiniteQuery({
     queryKey: queryKeys.marketplace.listings(0, limit),
     queryFn: async ({ pageParam = 0 }) => {
-      // Return empty result when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping marketplace listings fetch");
-        return { listings: [], hasMore: false };
-      }
-
       const endInteraction = await recordInteraction(
         "fetchMarketplaceListings"
       );
@@ -121,27 +113,19 @@ export function useInfiniteMarketplaceListings(limit = 20) {
       return allPages.length;
     },
     ...cacheStrategies.marketplaceListings,
-    enabled: !!publicClient && isOnline,
-    refetchOnWindowFocus: isOnline,
+    enabled: !!publicClient,
     refetchOnReconnect: true,
   });
 }
 
-// Hook for user's listings with optimized caching
+// Hook for user's listings with intelligent caching
 export function useUserListings(address) {
   const publicClient = usePublicClient();
-  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeys.marketplace.userListings(address),
     queryFn: async () => {
       if (!address) return [];
-
-      // Return empty array when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping user listings fetch");
-        return [];
-      }
 
       try {
         // Get all active listings and filter by user
@@ -159,8 +143,7 @@ export function useUserListings(address) {
       }
     },
     ...cacheStrategies.marketplaceListings,
-    enabled: !!address && !!publicClient && isOnline,
-    refetchOnWindowFocus: isOnline,
+    enabled: !!address && !!publicClient,
     refetchOnReconnect: true,
   });
 }
@@ -168,22 +151,10 @@ export function useUserListings(address) {
 // Hook for marketplace statistics with longer cache
 export function useMarketplaceStats() {
   const publicClient = usePublicClient();
-  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeys.marketplace.stats(),
     queryFn: async () => {
-      // Return default stats when offline to prevent network errors
-      if (!isOnline) {
-        console.log("Offline: Skipping marketplace stats fetch");
-        return {
-          totalListings: 0,
-          totalVolume: "0",
-          averagePrice: "0",
-          activeListings: 0,
-        };
-      }
-
       try {
         const [totalVolume, totalSales, activeCount] = await Promise.all([
           publicClient.readContract({
@@ -214,11 +185,11 @@ export function useMarketplaceStats() {
       }
     },
     ...cacheStrategies.staticData, // Use longer cache for stats
-    enabled: !!publicClient && isOnline,
+    enabled: !!publicClient,
   });
 }
 
-// Optimized hook for listing NFT with optimistic updates
+// Hook for listing NFT with optimistic updates
 export function useListNFT() {
   const queryClient = useQueryClient();
   const { writeContract, data: hash, isPending } = useWriteContract();
@@ -342,7 +313,7 @@ export function useListNFT() {
   };
 }
 
-// Optimized hook for buying NFT with optimistic updates
+// Hook for buying NFT with optimistic updates
 export function useBuyNFT() {
   const queryClient = useQueryClient();
   const { writeContract, data: hash, isPending } = useWriteContract();
@@ -410,7 +381,7 @@ export function useBuyNFT() {
   };
 }
 
-// Optimized hook for canceling listing with optimistic updates
+// Hook for canceling listing with optimistic updates
 export function useCancelListing() {
   const queryClient = useQueryClient();
   const { writeContract, data: hash, isPending } = useWriteContract();

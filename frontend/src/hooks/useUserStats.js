@@ -1,12 +1,12 @@
 "use client";
 
-import { useUserNFTs, useUserCreatedNFTs } from "./useOptimizedNFT";
-import { useUserListings } from "./useOptimizedMarketplace";
-import { useOptimizedUserAuctions } from "./useOptimizedAuction";
+import { useUserNFTs, useUserCreatedNFTs } from "./useNFT";
+import { useUserListings } from "./useMarketplace";
+import { useUserAuctions } from "./useAuction";
 import { useState, useEffect, useMemo } from "react";
 
 export function useUserStats(address) {
-  // Use optimized hooks with performance options
+  // Use hooks with performance options
   const { data: ownedNFTs = [], isLoading: nftsLoading } = useUserNFTs(
     address,
     {
@@ -22,7 +22,7 @@ export function useUserStats(address) {
   const { data: userListings = [], isLoading: listingsLoading } =
     useUserListings(address);
   const { data: userAuctions = [], isLoading: auctionsLoading } =
-    useOptimizedUserAuctions(address);
+    useUserAuctions(address);
 
   // Memoize normalized data to prevent unnecessary recalculations
   const normalizedData = useMemo(

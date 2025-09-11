@@ -13,7 +13,7 @@ const handleMutationError = (error, variables, context, mutation) => {
   // You can add toast notifications or other error handling here
 };
 
-// Retry function with exponential backoff and offline handling
+// Retry function with exponential backoff
 const retryFunction = (failureCount, error) => {
   // Don't retry on certain error types
   if (error?.code === "USER_REJECTED_REQUEST" || error?.code === 4001) {
@@ -25,27 +25,11 @@ const retryFunction = (failureCount, error) => {
     return false;
   }
 
-  // If offline, don't retry immediately - let the network status hook handle it
-  if (!navigator.onLine) {
-    return false;
-  }
-
   // Retry network errors and RPC errors
   return true;
 };
 
-// Network mode function that adapts based on connection status
-const getNetworkMode = () => {
-  // Always try to fetch when online
-  if (navigator.onLine) {
-    return "always";
-  }
-
-  // When offline, only serve from cache
-  return "offlineFirst";
-};
-
-// Create optimized query client with intelligent defaults
+// Create query client with intelligent defaults
 export const createQueryClient = () => {
   return new QueryClient({
     defaultOptions: {
@@ -71,8 +55,8 @@ export const createQueryClient = () => {
         // Enable background refetching for better UX
         refetchOnMount: true,
 
-        // Network mode - adapt based on connection status
-        networkMode: getNetworkMode(),
+        // Network mode - always try to fetch
+        networkMode: "always",
       },
       mutations: {
         // Retry mutations once on network errors
@@ -88,9 +72,6 @@ export const createQueryClient = () => {
 
         // Global error handler for mutations
         onError: handleMutationError,
-
-        // Network mode for mutations - pause when offline
-        networkMode: "online",
       },
     },
   });

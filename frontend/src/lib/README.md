@@ -74,7 +74,7 @@ queryUtils.cache.removeStaleNFTMetadata();
 
 ### 3. Query Client Configuration (`queryClient.js`)
 
-Optimized TanStack Query client with intelligent defaults:
+TanStack Query client with intelligent defaults:
 
 ```javascript
 import { createQueryClientWithUtils } from "./lib/queryClient";

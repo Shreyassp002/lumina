@@ -1,6 +1,6 @@
 "use client";
 
-// Optimized imports for hooks - only import what's needed
+// Efficient imports for hooks - only import what's needed
 // This file provides tree-shakable exports for better bundle optimization
 
 // Core TanStack Query hooks (most commonly used)
@@ -35,16 +35,11 @@ export const useLazyWagmiHooks = () => {
 
 // Performance monitoring hooks removed - no longer needed
 
-// Lazy load offline hooks (only when needed)
-export const useLazyOfflineHooks = () => {
-  return import("./useNetworkStatus").then((module) => ({
-    useNetworkStatus: module.useNetworkStatus,
-  }));
-};
+// Offline hooks removed - no longer needed
 
 // Lazy load specialized NFT hooks
 export const useLazyNFTHooks = () => {
-  return import("./useOptimizedNFT").then((module) => ({
+  return import("./useNFT").then((module) => ({
     useNFTData: module.useNFTData,
     useUserNFTs: module.useUserNFTs,
     useUserCreatedNFTs: module.useUserCreatedNFTs,
@@ -58,7 +53,7 @@ export const useLazyNFTHooks = () => {
 
 // Lazy load marketplace hooks
 export const useLazyMarketplaceHooks = () => {
-  return import("./useOptimizedMarketplace").then((module) => ({
+  return import("./useMarketplace").then((module) => ({
     useInfiniteMarketplaceListings: module.useInfiniteMarketplaceListings,
     useUserListings: module.useUserListings,
     useMarketplaceStats: module.useMarketplaceStats,
@@ -70,10 +65,10 @@ export const useLazyMarketplaceHooks = () => {
 
 // Lazy load auction hooks
 export const useLazyAuctionHooks = () => {
-  return import("./useOptimizedAuction").then((module) => ({
-    useOptimizedAllAuctions: module.useOptimizedAllAuctions,
-    useOptimizedAuctionData: module.useOptimizedAuctionData,
-    useOptimizedUserAuctions: module.useOptimizedUserAuctions,
+  return import("./useAuction").then((module) => ({
+    useAllAuctions: module.useAllAuctions,
+    useAuctionData: module.useAuctionData,
+    useUserAuctions: module.useUserAuctions,
     useCreateAuction: module.useCreateAuction,
     usePlaceBid: module.usePlaceBid,
     useSettleAuction: module.useSettleAuction,
@@ -82,15 +77,15 @@ export const useLazyAuctionHooks = () => {
 
 // Preload functions for better UX
 export const preloadNFTHooks = () => {
-  import("./useOptimizedNFT");
+  import("./useNFT");
 };
 
 export const preloadMarketplaceHooks = () => {
-  import("./useOptimizedMarketplace");
+  import("./useMarketplace");
 };
 
 export const preloadAuctionHooks = () => {
-  import("./useOptimizedAuction");
+  import("./useAuction");
 };
 
 // Utility function to preload hooks based on route

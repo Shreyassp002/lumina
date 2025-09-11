@@ -13,8 +13,8 @@ const LoadingSpinner = ({ message = "Loading..." }) => (
 );
 
 // Lazy load marketplace components (heavy with TanStack Query)
-export const LazyOptimizedMarketplaceGrid = lazy(() =>
-  import("./OptimizedMarketplaceGrid").then((module) => ({
+export const LazyMarketplaceGrid = lazy(() =>
+  import("./MarketplaceGrid").then((module) => ({
     default: module.default,
   }))
 );
@@ -26,8 +26,8 @@ export const LazyMarketplaceDebug = lazy(() =>
 );
 
 // Lazy load NFT components
-export const LazyOptimizedNFTGrid = lazy(() =>
-  import("./OptimizedNFTGrid").then((module) => ({
+export const LazyNFTGridAdvanced = lazy(() =>
+  import("./NFTGridAdvanced").then((module) => ({
     default: module.default,
   }))
 );
@@ -53,12 +53,6 @@ export const LazyAuctionsDebug = lazy(() =>
 
 // Performance and offline components removed - no longer needed
 
-export const LazyOfflineIndicator = lazy(() =>
-  import("./OfflineIndicator").then((module) => ({
-    default: module.default,
-  }))
-);
-
 // Lazy load modal components (only needed when opened)
 export const LazyNFTActionModal = lazy(() =>
   import("./NFTActionModal").then((module) => ({
@@ -79,7 +73,7 @@ export const withLazyLoading = (LazyComponent, loadingMessage) => {
 
 // Pre-configured lazy components with appropriate loading messages
 export const MarketplaceGrid = withLazyLoading(
-  LazyOptimizedMarketplaceGrid,
+  LazyMarketplaceGrid,
   "Loading marketplace..."
 );
 
@@ -88,7 +82,10 @@ export const MarketplaceDebug = withLazyLoading(
   "Loading debug info..."
 );
 
-export const NFTGrid = withLazyLoading(LazyOptimizedNFTGrid, "Loading NFTs...");
+export const NFTGridAdvanced = withLazyLoading(
+  LazyNFTGridAdvanced,
+  "Loading NFTs..."
+);
 
 export const NFTCard = withLazyLoading(LazyNFTCard, "Loading NFT...");
 
@@ -104,11 +101,6 @@ export const AuctionsDebug = withLazyLoading(
 
 // Performance and offline components removed
 
-export const OfflineIndicator = withLazyLoading(
-  LazyOfflineIndicator,
-  "Loading offline indicator..."
-);
-
 export const NFTActionModal = withLazyLoading(
   LazyNFTActionModal,
   "Loading modal..."
@@ -117,7 +109,7 @@ export const NFTActionModal = withLazyLoading(
 // Preload functions for critical components
 export const preloadMarketplaceComponents = () => {
   // Preload marketplace components when user is likely to navigate there
-  import("./OptimizedMarketplaceGrid");
+  import("./MarketplaceGrid");
   import("./MarketplaceDebug");
 };
 
@@ -129,7 +121,7 @@ export const preloadAuctionComponents = () => {
 
 export const preloadNFTComponents = () => {
   // Preload NFT components when user is likely to need them
-  import("./OptimizedNFTGrid");
+  import("./NFTGridAdvanced");
   import("./NFTCard");
 };
 

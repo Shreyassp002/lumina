@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAccount } from "wagmi";
-import { useInfiniteMarketplaceListings } from "../hooks/useOptimizedMarketplace";
+import { useInfiniteMarketplaceListings } from "../hooks/useMarketplace";
 import NFTCard from "./NFTCard";
 import { Loader2, RefreshCw, Search, Filter } from "lucide-react";
 import { useInView } from "react-intersection-observer";
@@ -89,7 +89,7 @@ const sortListings = (listings, sortBy) => {
   }
 };
 
-export default function OptimizedMarketplaceGrid({
+export default function MarketplaceGrid({
   searchTerm = "",
   filters = {},
   showFilters = false,
@@ -108,7 +108,7 @@ export default function OptimizedMarketplaceGrid({
     return () => clearTimeout(timer);
   }, [localSearchTerm]);
 
-  // Use the optimized infinite query hook
+  // Use the infinite query hook
   const {
     data,
     fetchNextPage,

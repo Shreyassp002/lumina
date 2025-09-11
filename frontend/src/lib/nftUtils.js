@@ -155,7 +155,7 @@ export const processBatch = async (
 /**
  * Image optimization utilities
  */
-export const getOptimizedImageUrl = (originalUrl, options = {}) => {
+export const getImageUrl = (originalUrl, options = {}) => {
   if (!originalUrl) return null;
 
   const {
@@ -393,7 +393,7 @@ export default {
   resolveIpfsUri,
   fetchMetadataWithFallback,
   processBatch,
-  getOptimizedImageUrl,
+  getImageUrl,
   generatePlaceholder,
   normalizeNFTData,
   generateCacheKey,

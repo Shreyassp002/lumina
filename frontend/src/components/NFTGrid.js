@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useInfiniteMarketplaceListings } from "../hooks/useOptimizedMarketplace";
+import { useInfiniteMarketplaceListings } from "../hooks/useMarketplace";
 import NFTCard from "./NFTCard";
 import { Loader2, RefreshCw } from "lucide-react";
 

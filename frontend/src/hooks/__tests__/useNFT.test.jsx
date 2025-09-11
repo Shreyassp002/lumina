@@ -1,5 +1,5 @@
 /**
- * Tests for optimized NFT hooks
+ * Tests for NFT hooks
  */
 
 import { renderHook, waitFor } from "@testing-library/react";
@@ -11,7 +11,7 @@ import {
   useUserCreatedNFTs,
   useBatchNFTData,
   useProgressiveImage,
-} from "../useOptimizedNFT";
+} from "../useNFT";
 
 // Mock wagmi hooks
 vi.mock("wagmi", () => ({
@@ -50,7 +50,7 @@ vi.mock("./usePerformanceMonitoring", () => ({
   })),
 }));
 
-describe("useOptimizedNFT hooks", () => {
+describe("useNFT hooks", () => {
   let queryClient;
   let wrapper;
 

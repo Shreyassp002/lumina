@@ -2,10 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  useOptimizedAllAuctions,
-  useOptimizedAuctionData,
+  useAllAuctions,
+  useAuctionData,
   useAuctionCountdown,
-} from "../useOptimizedAuction";
+} from "../useAuction";
 
 // Mock wagmi hooks
 vi.mock("wagmi", () => ({
@@ -21,7 +21,7 @@ vi.mock("../../abi/luminaAuction", () => ({
   LUMINA_AUCTION_ADDRESS: "0x123",
 }));
 
-describe("useOptimizedAuction hooks", () => {
+describe("useAuction hooks", () => {
   let queryClient;
   let wrapper;
 
@@ -73,12 +73,12 @@ describe("useOptimizedAuction hooks", () => {
     });
   });
 
-  describe("useOptimizedAuctionData", () => {
+  describe("useAuctionData", () => {
     it("should return null for invalid auction ID", async () => {
       const { usePublicClient } = await import("wagmi");
       usePublicClient.mockReturnValue(null);
 
-      const { result } = renderHook(() => useOptimizedAuctionData(null), {
+      const { result } = renderHook(() => useAuctionData(null), {
         wrapper,
       });
 
@@ -88,7 +88,7 @@ describe("useOptimizedAuction hooks", () => {
     });
   });
 
-  describe("useOptimizedAllAuctions", () => {
+  describe("useAllAuctions", () => {
     it("should handle empty auction list", async () => {
       const { usePublicClient } = await import("wagmi");
       const mockPublicClient = {
@@ -96,7 +96,7 @@ describe("useOptimizedAuction hooks", () => {
       };
       usePublicClient.mockReturnValue(mockPublicClient);
 
-      const { result } = renderHook(() => useOptimizedAllAuctions(), {
+      const { result } = renderHook(() => useAllAuctions(), {
         wrapper,
       });
 
