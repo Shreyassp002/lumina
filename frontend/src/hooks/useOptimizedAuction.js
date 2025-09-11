@@ -18,6 +18,7 @@ import {
 } from "../../abi/luminaAuction";
 import { queryKeyFactory } from "../lib/queryKeys";
 import { cacheStrategies } from "../lib/queryClient";
+import { useNetworkStatus } from "./useNetworkStatus";
 import {
   invalidateAuctionQueries,
   batchInvalidateAfterTransaction,
@@ -29,10 +30,17 @@ import { useState, useEffect, useCallback } from "react";
 // Hook to get auction count with TanStack Query
 export function useOptimizedAuctionCount() {
   const publicClient = usePublicClient();
+  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeyFactory.auctions.count(),
     queryFn: async () => {
+      // Return 0 when offline to prevent network errors
+      if (!isOnline) {
+        console.log("Offline: Skipping auction count fetch");
+        return 0;
+      }
+
       const count = await publicClient.readContract({
         address: LUMINA_AUCTION_ADDRESS,
         abi: LUMINA_AUCTION_ABI,
@@ -41,6 +49,8 @@ export function useOptimizedAuctionCount() {
       return Number(count || 0);
     },
     ...cacheStrategies.auctionData,
+    refetchOnWindowFocus: isOnline,
+    refetchOnReconnect: true,
   });
 }
 
@@ -48,12 +58,19 @@ export function useOptimizedAuctionCount() {
 export function useOptimizedAuctionData(auctionId) {
   const publicClient = usePublicClient();
   const queryClient = useQueryClient();
+  const { isOnline } = useNetworkStatus();
   // Performance monitoring removed
 
   const query = useQuery({
     queryKey: queryKeyFactory.auctions.byId(auctionId),
     queryFn: async () => {
       if (!auctionId) return null;
+
+      // Return null when offline to prevent network errors
+      if (!isOnline) {
+        console.log("Offline: Skipping auction data fetch");
+        return null;
+      }
 
       const endInteraction = recordInteraction("fetchAuctionData");
 
@@ -153,10 +170,17 @@ export function useOptimizedAuctionData(auctionId) {
 export function useOptimizedAllAuctions() {
   const publicClient = usePublicClient();
   const queryClient = useQueryClient();
+  const { isOnline } = useNetworkStatus();
 
   const query = useQuery({
     queryKey: queryKeyFactory.auctions.active(),
     queryFn: async () => {
+      // Return empty array when offline to prevent network errors
+      if (!isOnline) {
+        console.log("Offline: Skipping auctions fetch");
+        return [];
+      }
+
       try {
         const currentAuctionId = await publicClient.readContract({
           address: LUMINA_AUCTION_ADDRESS,
@@ -234,6 +258,7 @@ export function useOptimizedAllAuctions() {
         return [];
       }
     },
+    enabled: !!publicClient && isOnline,
     ...cacheStrategies.auctionData,
   });
 
@@ -289,11 +314,18 @@ export function useOptimizedAllAuctions() {
 export function useOptimizedUserAuctions(address) {
   const publicClient = usePublicClient();
   const queryClient = useQueryClient();
+  const { isOnline } = useNetworkStatus();
 
   const query = useQuery({
     queryKey: queryKeyFactory.auctions.userAuctions(address),
     queryFn: async () => {
       if (!address) return [];
+
+      // Return empty array when offline to prevent network errors
+      if (!isOnline) {
+        console.log("Offline: Skipping user auctions fetch");
+        return [];
+      }
 
       try {
         const currentAuctionId = await publicClient.readContract({
@@ -355,7 +387,7 @@ export function useOptimizedUserAuctions(address) {
         return [];
       }
     },
-    enabled: !!address,
+    enabled: !!address && !!publicClient && isOnline,
     ...cacheStrategies.auctionData,
   });
 

@@ -254,7 +254,7 @@ export default function OptimizedMarketplaceGrid({
           Active Listings ({processedListings.length})
           {debouncedSearchTerm && (
             <span className="text-sm font-normal text-green-200/70 ml-2">
-              for "{debouncedSearchTerm}"
+              for &quot;{debouncedSearchTerm}&quot;
             </span>
           )}
         </h2>
@@ -306,7 +306,7 @@ export default function OptimizedMarketplaceGrid({
       {!hasNextPage && processedListings.length > 0 && (
         <div className="text-center py-8">
           <div className="text-green-200/60">
-            You've reached the end of the listings
+            You&apos;ve reached the end of the listings
           </div>
         </div>
       )}

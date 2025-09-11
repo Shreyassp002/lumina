@@ -13,6 +13,7 @@ import {
   usePublicClient,
 } from "wagmi";
 import { LUMINA_NFT_ABI, LUMINA_NFT_ADDRESS } from "../../abi/luminaNft";
+import { useNetworkStatus } from "./useNetworkStatus";
 import { queryKeyFactory } from "../lib/queryKeys";
 import { cacheStrategies } from "../lib/queryClientOptimized";
 import { useState, useCallback, useEffect } from "react";
@@ -144,11 +145,18 @@ export function useNFTMetadata(tokenURI, options = {}) {
 export function useUserNFTs(address, options = {}) {
   const { enabled = true, includeMetadata = true } = options;
   const publicClient = usePublicClient();
+  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeyFactory.nfts.byOwner(address),
     queryFn: async () => {
       if (!address || !publicClient) return [];
+
+      // Return empty array when offline to prevent network errors
+      if (!isOnline) {
+        console.log("Offline: Skipping user NFTs fetch");
+        return [];
+      }
 
       try {
         // Get current token counter
@@ -263,8 +271,10 @@ export function useUserNFTs(address, options = {}) {
         throw error;
       }
     },
-    enabled: enabled && !!address && !!publicClient,
+    enabled: enabled && !!address && !!publicClient && isOnline,
     ...cacheStrategies.userBalances,
+    refetchOnWindowFocus: isOnline,
+    refetchOnReconnect: true,
   });
 }
 
@@ -274,11 +284,18 @@ export function useUserNFTs(address, options = {}) {
 export function useUserCreatedNFTs(address, options = {}) {
   const { enabled = true, includeMetadata = true } = options;
   const publicClient = usePublicClient();
+  const { isOnline } = useNetworkStatus();
 
   return useQuery({
     queryKey: queryKeyFactory.nfts.byCreator(address),
     queryFn: async () => {
       if (!address || !publicClient) return [];
+
+      // Return empty array when offline to prevent network errors
+      if (!isOnline) {
+        console.log("Offline: Skipping user created NFTs fetch");
+        return [];
+      }
 
       try {
         // Get current token counter
@@ -375,8 +392,10 @@ export function useUserCreatedNFTs(address, options = {}) {
         throw error;
       }
     },
-    enabled: enabled && !!address && !!publicClient,
+    enabled: enabled && !!address && !!publicClient && isOnline,
     ...cacheStrategies.userBalances,
+    refetchOnWindowFocus: isOnline,
+    refetchOnReconnect: true,
   });
 }
 

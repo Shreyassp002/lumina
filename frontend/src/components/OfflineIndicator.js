@@ -2,7 +2,7 @@
 
 import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { WifiOff, Wifi, RefreshCw } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * Component that shows offline status and provides manual sync option
@@ -10,6 +10,12 @@ import { useState } from "react";
 export function OfflineIndicator() {
   const { isOnline, checkNetworkConnectivity } = useNetworkStatus();
   const [isChecking, setIsChecking] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Handle hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleManualCheck = async () => {
     setIsChecking(true);
@@ -20,8 +26,8 @@ export function OfflineIndicator() {
     }
   };
 
-  // Don't show anything when online
-  if (isOnline) {
+  // Don't render anything during SSR or when online
+  if (!mounted || isOnline) {
     return null;
   }
 
@@ -29,7 +35,7 @@ export function OfflineIndicator() {
     <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[60]">
       <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
         <WifiOff size={16} />
-        <span className="text-sm font-medium">You're offline</span>
+        <span className="text-sm font-medium">You&apos;re offline</span>
         <span className="text-xs text-yellow-600">Showing cached data</span>
         <button
           onClick={handleManualCheck}
@@ -49,8 +55,13 @@ export function OfflineIndicator() {
  */
 export function InlineOfflineIndicator({ className = "" }) {
   const { isOnline } = useNetworkStatus();
+  const [mounted, setMounted] = useState(false);
 
-  if (isOnline) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || isOnline) {
     return null;
   }
 
@@ -69,8 +80,13 @@ export function InlineOfflineIndicator({ className = "" }) {
  */
 export function ConnectionStatus({ showWhenOnline = false }) {
   const { isOnline } = useNetworkStatus();
+  const [mounted, setMounted] = useState(false);
 
-  if (!showWhenOnline && isOnline) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || (!showWhenOnline && isOnline)) {
     return null;
   }
 
