@@ -240,7 +240,7 @@ export default function NFTActionModal({
             <div>
               <label className="block text-sm font-medium text-green-200/80 mb-2">
                 <DollarSign className="w-4 h-4 inline mr-1" />
-                Listing Price (ETH)
+                Listing Price (STT)
               </label>
               <div className="relative">
                 <input
@@ -254,7 +254,7 @@ export default function NFTActionModal({
                     }`}
                 />
                 <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
-                  ETH
+                  STT
                 </span>
               </div>
               {errors.price && (
@@ -266,7 +266,7 @@ export default function NFTActionModal({
               <div>
                 <label className="block text-sm font-medium text-green-200/80 mb-2">
                   <DollarSign className="w-4 h-4 inline mr-1" />
-                  Starting Price (ETH)
+                  Starting Price (STT)
                 </label>
                 <div className="relative">
                   <input
@@ -282,7 +282,7 @@ export default function NFTActionModal({
                       }`}
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
-                    ETH
+                    STT
                   </span>
                 </div>
                 {errors.startPrice && (
@@ -320,7 +320,7 @@ export default function NFTActionModal({
               <div>
                 <label className="block text-sm font-medium text-green-200/80 mb-2">
                   <Gavel className="w-4 h-4 inline mr-1" />
-                  Minimum Bid Increment (ETH)
+                  Minimum Bid Increment (STT)
                 </label>
                 <div className="relative">
                   <input
@@ -335,7 +335,7 @@ export default function NFTActionModal({
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
-                    ETH
+                    STT
                   </span>
                 </div>
                 <p className="text-sm text-green-200/70 mt-1">
@@ -346,7 +346,7 @@ export default function NFTActionModal({
               <div>
                 <label className="block text-sm font-medium text-green-200/80 mb-2">
                   <Zap className="w-4 h-4 inline mr-1" />
-                  Buy Now Price (ETH) - Optional
+                  Buy Now Price (STT) - Optional
                 </label>
                 <div className="relative">
                   <input
@@ -362,7 +362,7 @@ export default function NFTActionModal({
                       }`}
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
-                    ETH
+                    STT
                   </span>
                 </div>
                 {errors.buyNowPrice && (

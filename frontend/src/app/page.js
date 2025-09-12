@@ -1,12 +1,59 @@
+"use client";
+
 import Layout from "../components/ui/Layout";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Zap, Shield, Users } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { gsap } from "../lib/gsap";
 
 export default function Home() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(el.querySelectorAll(".fade-section")).forEach((s) => {
+        gsap.from(s, {
+          opacity: 0,
+          y: 12,
+          duration: 0.45,
+          ease: "power2.out",
+          stagger: 0.04,
+        });
+      });
+
+      const featureCards = el.querySelectorAll(".feature-card");
+      if (featureCards.length) {
+        gsap.from(featureCards, {
+          opacity: 0,
+          y: 14,
+          duration: 0.4,
+          ease: "power2.out",
+          stagger: 0.08,
+          delay: 0.1,
+        });
+      }
+
+      const statCards = el.querySelectorAll(".stat-card");
+      if (statCards.length) {
+        gsap.from(statCards, {
+          opacity: 0,
+          y: 10,
+          duration: 0.35,
+          ease: "power2.out",
+          stagger: 0.06,
+          delay: 0.15,
+        });
+      }
+    }, el);
+    return () => ctx.revert();
+  }, []);
+
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section ref={sectionRef} className="relative overflow-hidden">
         <div
           className="absolute inset-0"
           style={{
@@ -14,7 +61,7 @@ export default function Home() {
               "radial-gradient(1200px 600px at 20% -10%, rgba(0,255,136,0.12), transparent), radial-gradient(1000px 500px at 80% 10%, rgba(0, 200, 110, 0.12), transparent)",
           }}
         ></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 fade-section">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
               Discover the Future of
@@ -51,7 +98,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20">
+      <section className="py-20 fade-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-emerald-200 mb-4">
@@ -64,7 +111,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass-panel p-8 rounded-2xl hover:neon-glow transition-shadow duration-300">
+            <div className="glass-panel p-8 rounded-2xl hover:neon-glow transition-shadow duration-300 feature-card">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mb-6">
                 <Zap className="w-6 h-6 text-black" />
               </div>
@@ -78,7 +125,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="glass-panel p-8 rounded-2xl hover:neon-glow transition-shadow duration-300">
+            <div className="glass-panel p-8 rounded-2xl hover:neon-glow transition-shadow duration-300 feature-card">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mb-6">
                 <Shield className="w-6 h-6 text-black" />
               </div>
@@ -91,7 +138,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="glass-panel p-8 rounded-2xl hover:neon-glow transition-shadow duration-300">
+            <div className="glass-panel p-8 rounded-2xl hover:neon-glow transition-shadow duration-300 feature-card">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-lg flex items-center justify-center mb-6">
                 <Users className="w-6 h-6 text-black" />
               </div>
@@ -108,28 +155,28 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20">
+      <section className="py-20 fade-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
+            <div className="stat-card">
               <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
                 10K+
               </div>
               <div className="text-green-200/70">NFTs Created</div>
             </div>
-            <div>
+            <div className="stat-card">
               <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
                 5K+
               </div>
               <div className="text-green-200/70">Active Users</div>
             </div>
-            <div>
+            <div className="stat-card">
               <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
                 1M+
               </div>
               <div className="text-green-200/70">Volume Traded</div>
             </div>
-            <div>
+            <div className="stat-card">
               <div className="text-3xl md:text-4xl font-bold text-emerald-300 mb-2">
                 99.9%
               </div>
@@ -140,7 +187,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-emerald-500 to-lime-500 text-black">
+      <section className="py-20 bg-gradient-to-r from-emerald-500 to-lime-500 text-black fade-section">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to Start Your NFT Journey?

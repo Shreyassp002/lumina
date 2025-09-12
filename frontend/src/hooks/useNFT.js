@@ -25,7 +25,7 @@ import {
 // Simplified performance hooks - disabled for now
 const getPerformanceHooks = async () => {
   return {
-    useComponentPerformance: () => ({ recordInteraction: () => () => {} }),
+    useComponentPerformance: () => ({ recordInteraction: () => () => { } }),
     useInteractionTracking: () => ({ trackInteraction: (name, fn) => fn }),
   };
 };
@@ -61,7 +61,7 @@ export function useNFTData(tokenId, options = {}) {
         .useComponentPerformance("useNFTData")
         .recordInteraction(name);
     }
-    return () => {}; // No-op in production
+    return () => { }; // No-op in production
   };
 
   return useQuery({
@@ -571,7 +571,7 @@ export function useMintNFT() {
             abi: LUMINA_NFT_ABI,
             functionName: "mintNFT",
             args: [metadataURI, royaltyBps, category],
-            value: 1000000000000000n, // 0.001 ETH mint fee
+            value: 1000000000000000n, // 0.001 STT mint fee
           });
         } catch (error) {
           console.error("Minting failed:", error);

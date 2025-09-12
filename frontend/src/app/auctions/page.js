@@ -156,7 +156,7 @@ export default function AuctionsPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-emerald-300">
-                    {formatEther(totalVolumeWei)} ETH
+                    {formatEther(totalVolumeWei)} STT
                   </div>
                   <div className="text-green-200/70">Total Volume</div>
                 </div>

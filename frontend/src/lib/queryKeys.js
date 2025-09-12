@@ -168,7 +168,7 @@ export const userKeys = {
   // User profile data
   profile: (address) => [...userKeys.all(), "profile", address?.toLowerCase()],
 
-  // User's ETH balance
+  // User's STT balance
   balance: (address) => [...userKeys.all(), "balance", address?.toLowerCase()],
 
   // User statistics (owned NFTs, sales, etc.)

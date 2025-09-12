@@ -50,7 +50,7 @@ export default function AuctionCard({ auction, currentUser }) {
       parseEther(formatEther(auction.minIncrement));
 
     if (bidValue < minBid) {
-      alert(`Minimum bid is ${formatEther(minBid)} ETH`);
+      alert(`Minimum bid is ${formatEther(minBid)} STT`);
       return;
     }
 
@@ -109,12 +109,12 @@ export default function AuctionCard({ auction, currentUser }) {
   return (
     <div ref={rootRef} className="glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300">
       {/* Image */}
-      <div className="aspect-square relative overflow-hidden">
+      <div className="aspect-square relative overflow-hidden max-w-[85%] mx-auto my-3 rounded-xl">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={name || `NFT #${auction.tokenId}`}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
           />
         ) : (
           <div className="w-full h-full bg-[#0e1518] flex items-center justify-center text-green-200/60">
@@ -173,10 +173,10 @@ export default function AuctionCard({ auction, currentUser }) {
           </div>
           <div className="flex items-center justify-between">
             <div className="text-xl font-bold text-emerald-300">
-              {formatEther(auction.currentBid || auction.startPrice)} ETH
+              {formatEther(auction.currentBid || auction.startPrice)} STT
             </div>
             <div className="text-sm text-green-200/70">
-              {formatEther(auction.minIncrement)} ETH
+              {formatEther(auction.minIncrement)} STT
             </div>
           </div>
           {auction.currentBidder && (
@@ -204,7 +204,7 @@ export default function AuctionCard({ auction, currentUser }) {
                   Buy Now Price
                 </div>
                 <div className="text-lg font-bold text-emerald-300">
-                  {formatEther(auction.buyNowPrice)} ETH
+                  {formatEther(auction.buyNowPrice)} STT
                 </div>
               </div>
               {!isOwner && (
@@ -235,7 +235,7 @@ export default function AuctionCard({ auction, currentUser }) {
           <div className="space-y-3">
             <div>
               <label className="block text-sm font-medium text-green-200/80 mb-1">
-                Your Bid (ETH)
+                Your Bid (STT)
               </label>
               <input
                 type="number"

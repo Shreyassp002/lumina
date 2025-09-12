@@ -167,7 +167,7 @@ export default function NFTCard({
         <div className="flex items-center justify-between">
           <div>
             <div className="text-lg font-bold text-emerald-300">
-              {formatEther(price)} ETH
+              {formatEther(price)} STT
             </div>
             {nftData?.tokenData?.royaltyBps && (
               <div className="text-xs text-green-200/60">

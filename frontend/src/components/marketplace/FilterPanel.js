@@ -90,7 +90,7 @@ export default function FilterPanel({ filters, onFiltersChange }) {
         {/* Price Range */}
         <div>
           <label className="block text-sm font-medium text-green-200/80 mb-2">
-            Price Range (ETH)
+            Price Range (STT)
           </label>
           <div className="flex items-center space-x-2">
             <input

@@ -104,7 +104,7 @@ export default function MarketplaceDebug() {
           </div>
           <div>
             <strong className="text-emerald-300">Total Volume:</strong>{" "}
-            {debugInfo.totalVolume} ETH
+            {debugInfo.totalVolume} STT
           </div>
           <div>
             <strong className="text-emerald-300">Total Sales:</strong>{" "}

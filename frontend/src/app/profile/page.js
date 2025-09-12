@@ -227,7 +227,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-emerald-300">
-                      {stats.totalEarnings} ETH
+                      {stats.totalEarnings} STT
                     </div>
                     <div className="text-green-200/70">Earnings</div>
                   </div>
@@ -443,7 +443,7 @@ export default function ProfilePage() {
                                 Listed NFT #{l.tokenId}
                               </p>
                               <p className="text-sm text-green-200/70">
-                                Price: {Number(l.price) / 1e18} ETH
+                                Price: {Number(l.price) / 1e18} STT
                               </p>
                             </div>
                           </div>
