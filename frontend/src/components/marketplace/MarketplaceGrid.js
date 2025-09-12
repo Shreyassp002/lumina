@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useInfiniteMarketplaceListings } from "../../hooks/useMarketplace";
 import NFTCard from "../nft/NFTCard";
 import { Loader2, RefreshCw, Search, Filter } from "lucide-react";
 import { useInView } from "react-intersection-observer";
+import { gsap } from "../../lib/gsap";
 
 // Client-side filtering and search utilities
 const filterListings = (listings, searchTerm, filters) => {
@@ -93,9 +94,11 @@ export default function MarketplaceGrid({
   searchTerm = "",
   filters = {},
   showFilters = false,
-  onFiltersChange = () => {},
+  onFiltersChange = () => { },
 }) {
   const { address } = useAccount();
+  const gridRef = useRef(null);
+  const itemRefs = useRef([]);
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
@@ -144,6 +147,21 @@ export default function MarketplaceGrid({
     let filtered = filterListings(allListings, debouncedSearchTerm, filters);
     return sortListings(filtered, filters.sortBy || "newest");
   }, [allListings, debouncedSearchTerm, filters]);
+
+  // Animate items on data change
+  useEffect(() => {
+    if (!gridRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.from(itemRefs.current, {
+        opacity: 0,
+        y: 12,
+        duration: 0.35,
+        ease: "power2.out",
+        stagger: 0.06,
+      });
+    }, gridRef);
+    return () => ctx.revert();
+  }, [processedListings.length]);
 
   // Handle refresh
   const handleRefresh = useCallback(() => {
@@ -275,10 +293,11 @@ export default function MarketplaceGrid({
       </div>
 
       {/* NFT Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {processedListings.map((listing) => (
+      <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {processedListings.map((listing, index) => (
           <NFTCard
             key={`${listing.tokenId}-${listing.listingId}`}
+            refCallback={(el) => (itemRefs.current[index] = el)}
             tokenId={listing.tokenId}
             price={listing.priceWei}
             seller={listing.seller}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useAllAuctions } from "../../hooks/useAuction";
 import Layout from "../../components/ui/Layout";
@@ -10,6 +10,7 @@ import {
   preloadAuctionComponents,
 } from "../../components/common/LazyComponents";
 import { Gavel, Clock, TrendingUp } from "lucide-react";
+import { gsap, ScrollTrigger } from "../../lib/gsap";
 import { formatEther } from "viem";
 
 // Preload auction components when this module loads
@@ -52,6 +53,29 @@ export default function AuctionsPage() {
     );
   }, 0n);
 
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(el.querySelectorAll(".fade-section")).forEach((s) => {
+        gsap.from(s, {
+          opacity: 0,
+          y: 12,
+          duration: 0.4,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: s,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      });
+    }, el);
+    return () => ctx.revert();
+  }, []);
+
   if (loading) {
     return (
       <Layout>
@@ -67,9 +91,9 @@ export default function AuctionsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen">
+      <div ref={sectionRef} className="min-h-screen">
         {/* Header */}
-        <div className="glass-panel">
+        <div className="glass-panel fade-section">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
               <h1 className="text-3xl md:text-4xl font-bold text-emerald-200 mb-4">
@@ -84,12 +108,12 @@ export default function AuctionsPage() {
         </div>
 
         {/* Debug */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 fade-section">
           <AuctionsDebug />
         </div>
 
         {/* Stats */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-section">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="glass-panel p-6 rounded-xl">
               <div className="flex items-center">
@@ -141,7 +165,7 @@ export default function AuctionsPage() {
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex space-x-1 glass-panel p-1 rounded-lg mb-8">
+          <div className="flex space-x-1 glass-panel p-1 rounded-lg mb-8 fade-section">
             {[
               { key: "all", label: "All Auctions" },
               { key: "active", label: "Active" },
@@ -151,11 +175,10 @@ export default function AuctionsPage() {
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  filter === tab.key
-                    ? "bg-[#0e1518] text-emerald-300 accent-ring"
-                    : "text-green-200/70 hover:text-emerald-200"
-                }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${filter === tab.key
+                  ? "bg-[#0e1518] text-emerald-300 accent-ring"
+                  : "text-green-200/70 hover:text-emerald-200"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -164,7 +187,7 @@ export default function AuctionsPage() {
 
           {/* Auction Grid */}
           {filteredAuctions.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 fade-section">
               <Gavel className="w-16 h-16 text-green-200/40 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-emerald-200 mb-2">
                 No auctions found
@@ -176,7 +199,7 @@ export default function AuctionsPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-section">
               {filteredAuctions.map((auction) => (
                 <AuctionCard
                   key={auction.id}

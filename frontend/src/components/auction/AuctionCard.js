@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 import {
   usePlaceBid,
@@ -11,9 +11,11 @@ import { useNFTData } from "../../hooks/useNFT";
 import { formatEther, parseEther } from "viem";
 import Link from "next/link";
 import { Clock, Gavel, Zap, ExternalLink } from "lucide-react";
+import { gsap } from "../../lib/gsap";
 
 export default function AuctionCard({ auction, currentUser }) {
   const { address } = useAccount();
+  const rootRef = useRef(null);
   const [bidAmount, setBidAmount] = useState("");
   const [isBidding, setIsBidding] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
@@ -83,6 +85,12 @@ export default function AuctionCard({ auction, currentUser }) {
     currentUser?.toLowerCase() === auction.currentBidder?.toLowerCase();
   const isActive = auction.status === "active" && !isEnded;
 
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    gsap.from(el, { opacity: 0, y: 8, duration: 0.3, ease: "power2.out" });
+  }, []);
+
   // Show loading state while NFT data is loading
   if (isNFTLoading) {
     return (
@@ -99,7 +107,7 @@ export default function AuctionCard({ auction, currentUser }) {
   }
 
   return (
-    <div className="glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300">
+    <div ref={rootRef} className="glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300">
       {/* Image */}
       <div className="aspect-square relative overflow-hidden">
         {imageUrl ? (
@@ -115,13 +123,12 @@ export default function AuctionCard({ auction, currentUser }) {
         )}
         <div className="absolute top-3 left-3">
           <div
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              isActive
-                ? "bg-emerald-500 text-black"
-                : isEnded
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${isActive
+              ? "bg-emerald-500 text-black"
+              : isEnded
                 ? "bg-[#0e1518] text-green-200/70"
                 : "bg-lime-500 text-black"
-            }`}
+              }`}
           >
             {isActive ? "Live" : isEnded ? "Ended" : "Upcoming"}
           </div>

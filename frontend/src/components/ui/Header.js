@@ -4,6 +4,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sparkles, Home, Plus, Gavel, User } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { gsap } from "../../lib/gsap";
 
 const navigation = [
   { name: "Home", href: "/", icon: Home },
@@ -15,9 +17,42 @@ const navigation = [
 
 export default function Header() {
   const pathname = usePathname();
+  const headerRef = useRef(null);
+  const navItemsRef = useRef([]);
+  const connectRef = useRef(null);
+
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const ctx = gsap.context(() => {
+      gsap.from(headerRef.current, {
+        y: -20,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out",
+      });
+      gsap.from(navItemsRef.current, {
+        opacity: 0,
+        y: 10,
+        duration: 0.4,
+        ease: "power2.out",
+        stagger: 0.06,
+        delay: 0.1,
+      });
+      if (connectRef.current) {
+        gsap.from(connectRef.current, {
+          opacity: 0,
+          scale: 0.98,
+          duration: 0.4,
+          ease: "power2.out",
+          delay: 0.15,
+        });
+      }
+    }, headerRef);
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <header className="glass-panel sticky top-0 z-50">
+    <header ref={headerRef} className="glass-panel sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -32,18 +67,18 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => {
+            {navigation.map((item, index) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.name}
+                  ref={(el) => (navItemsRef.current[index] = el)}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive
-                      ? "text-emerald-300 bg-[#0f1b16] accent-ring"
-                      : "text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]"
-                  }`}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
+                    ? "text-emerald-300 bg-[#0f1b16] accent-ring"
+                    : "text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]"
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{item.name}</span>
@@ -53,7 +88,7 @@ export default function Header() {
           </nav>
 
           {/* Connect Wallet */}
-          <div className="flex items-center space-x-4">
+          <div ref={connectRef} className="flex items-center space-x-4">
             <ConnectButton />
           </div>
         </div>
@@ -68,11 +103,10 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
-                    isActive
-                      ? "text-emerald-300 bg-[#0f1b16] accent-ring"
-                      : "text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]"
-                  }`}
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${isActive
+                    ? "text-emerald-300 bg-[#0f1b16] accent-ring"
+                    : "text-gray-300 hover:text-emerald-300 hover:bg-[#0c1411]"
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{item.name}</span>

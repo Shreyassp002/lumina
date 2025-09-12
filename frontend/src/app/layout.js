@@ -2,6 +2,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Web3Provider } from "../providers/Web3Provider";
 import RoutePreloader from "../components/common/RoutePreloader";
+import RouteTransition from "../components/common/RouteTransition";
 
 const blancGroove = localFont({
   src: [
@@ -110,6 +111,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={blancGroove.variable}>
       <body className={blancGroove.variable}>
         <Web3Provider>
+          <RouteTransition />
           <RoutePreloader />
           {children}
         </Web3Provider>

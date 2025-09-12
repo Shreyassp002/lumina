@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 import Layout from "../../components/ui/Layout";
 import { useUserStats } from "../../hooks/useUserStats";
@@ -17,10 +17,28 @@ import {
   Edit3,
   Loader2,
 } from "lucide-react";
+import { gsap } from "../../lib/gsap";
 
 export default function ProfilePage() {
   const { address } = useAccount();
   const [activeTab, setActiveTab] = useState("owned");
+  const sectionRef = useRef(null);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(el.querySelectorAll(".fade-section")).forEach((s) => {
+        gsap.from(s, {
+          opacity: 0,
+          y: 12,
+          duration: 0.35,
+          ease: "power2.out",
+          stagger: 0.05,
+        });
+      });
+    }, el);
+    return () => ctx.revert();
+  }, []);
 
   // Use custom hooks to get real contract data
   const {
@@ -91,7 +109,7 @@ export default function ProfilePage() {
   if (!address) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center fade-section">
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <User className="w-8 h-8 text-black" />
@@ -110,9 +128,9 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen">
+      <div ref={sectionRef} className="min-h-screen">
         {/* Profile Header */}
-        <div className="glass-panel">
+        <div className="glass-panel fade-section">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
               {/* Avatar */}
@@ -153,7 +171,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Stats */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-section">
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
@@ -219,7 +237,7 @@ export default function ProfilePage() {
           )}
 
           {/* Tabs */}
-          <div className="glass-panel rounded-xl">
+          <div className="glass-panel rounded-xl fade-section">
             <div className="border-b border-[#133027]">
               <nav className="flex space-x-8 px-6">
                 {tabs.map((tab) => {
@@ -228,11 +246,10 @@ export default function ProfilePage() {
                     <button
                       key={tab.key}
                       onClick={() => setActiveTab(tab.key)}
-                      className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                        activeTab === tab.key
-                          ? "border-emerald-400 text-emerald-300"
-                          : "border-transparent text-green-200/70 hover:text-emerald-200 hover:border-[#133027]"
-                      }`}
+                      className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${activeTab === tab.key
+                        ? "border-emerald-400 text-emerald-300"
+                        : "border-transparent text-green-200/70 hover:text-emerald-200 hover:border-[#133027]"
+                        }`}
                     >
                       <Icon className="w-4 h-4 mr-2" />
                       {tab.label}
