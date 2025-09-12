@@ -26,6 +26,12 @@ import {
 import { useState, useEffect, useCallback } from "react";
 // Performance monitoring hooks removed
 
+// Provide safe no-op performance helpers to avoid runtime errors
+// recordInteraction: returns an endInteraction function
+const recordInteraction = () => () => { };
+// trackInteraction: wraps a function without altering behavior
+const trackInteraction = (_name, fn) => fn;
+
 // Hook to get auction count with TanStack Query
 export function useAuctionCount() {
   const publicClient = usePublicClient();
@@ -97,8 +103,8 @@ export function useAuctionData(auctionId) {
             auction.active && Date.now() < Number(auction.endTime) * 1000
               ? "active"
               : auction.settled
-              ? "ended"
-              : "inactive",
+                ? "ended"
+                : "inactive",
           bidCount: Array.isArray(bids) ? bids.length : 0,
           lastUpdated: Date.now(),
         };
@@ -205,24 +211,38 @@ export function useAllAuctions() {
           .filter(Boolean)
           .map((entry, idx) => {
             const a = entry.a;
-            const endTimeSec = Number(a.endTime);
-            const nowActive = a.active && Date.now() < endTimeSec * 1000;
+            const isTuple = Array.isArray(a);
+            // Support both struct-as-object and tuple array decoding
+            const tokenId = isTuple ? Number(a[0]) : Number(a.tokenId);
+            const seller = isTuple ? a[1] : a.seller;
+            const currentBidder = isTuple ? a[2] : a.currentBidder;
+            const startPrice = isTuple ? a[3] : a.startPrice;
+            const currentBid = isTuple ? a[4] : a.currentBid;
+            const startTimeSec = isTuple ? Number(a[6]) : Number(a.startTime);
+            const endTimeSec = isTuple ? Number(a[7]) : Number(a.endTime);
+            const minIncrement = isTuple ? a[8] : a.minIncrement;
+            const active = isTuple ? Boolean(a[10]) : a.active;
+            const settled = isTuple ? Boolean(a[11]) : a.settled;
+            const buyNowPriceRaw = isTuple ? a[12] : a.buyNowPrice;
+            const buyNowPrice =
+              buyNowPriceRaw && buyNowPriceRaw > 0n ? buyNowPriceRaw : null;
+
+            const nowActive = active && Date.now() < endTimeSec * 1000;
 
             return {
               id: entry.id,
-              tokenId: Number(a.tokenId),
-              seller: a.seller,
-              startPrice: a.startPrice,
-              currentBid: a.currentBid,
-              currentBidder: a.currentBidder,
-              startTime: Number(a.startTime) * 1000,
+              tokenId,
+              seller,
+              startPrice,
+              currentBid,
+              currentBidder,
+              startTime: startTimeSec * 1000,
               endTime: endTimeSec * 1000,
-              minIncrement: a.minIncrement,
-              buyNowPrice:
-                a.buyNowPrice && a.buyNowPrice > 0n ? a.buyNowPrice : null,
-              active: a.active,
-              settled: a.settled,
-              status: nowActive ? "active" : a.settled ? "ended" : "inactive",
+              minIncrement,
+              buyNowPrice,
+              active,
+              settled,
+              status: nowActive ? "active" : settled ? "ended" : "inactive",
               bidCount: bidsCounts[idx] || 0,
               lastUpdated: Date.now(),
             };
@@ -344,8 +364,8 @@ export function useUserAuctions(address) {
                 a.active && Date.now() < Number(a.endTime) * 1000
                   ? "active"
                   : a.settled
-                  ? "ended"
-                  : "inactive",
+                    ? "ended"
+                    : "inactive",
               lastUpdated: Date.now(),
             };
           })

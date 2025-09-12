@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useMintNFT } from "../../hooks/useNFT";
 import Layout from "../../components/ui/Layout";
+import { gsap } from "../../lib/gsap";
 import {
   Upload,
   Image as ImageIcon,
@@ -15,6 +16,23 @@ import {
 
 export default function CreatePage() {
   const { address } = useAccount();
+  const sectionRef = useRef(null);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(el.querySelectorAll(".fade-section")).forEach((s) => {
+        gsap.from(s, {
+          opacity: 0,
+          y: 12,
+          duration: 0.35,
+          ease: "power2.out",
+          stagger: 0.05,
+        });
+      });
+    }, el);
+    return () => ctx.revert();
+  }, []);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -121,7 +139,7 @@ export default function CreatePage() {
   if (!address) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center fade-section">
           <div className="text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-8 h-8 text-black" />
@@ -140,8 +158,8 @@ export default function CreatePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div ref={sectionRef} className="min-h-screen">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 fade-section">
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold text-emerald-200 mb-4">
               Create Your NFT
@@ -152,7 +170,7 @@ export default function CreatePage() {
             </p>
           </div>
 
-          <div className="glass-panel rounded-2xl p-8">
+          <div className="glass-panel rounded-2xl p-8 fade-section">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Image Upload */}
               <div>
@@ -326,8 +344,8 @@ export default function CreatePage() {
                       {isUploading
                         ? "Uploading to IPFS..."
                         : isConfirming
-                        ? "Confirming..."
-                        : "Minting..."}
+                          ? "Confirming..."
+                          : "Minting..."}
                     </>
                   ) : (
                     <>

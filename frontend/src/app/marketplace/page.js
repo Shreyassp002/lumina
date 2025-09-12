@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Layout from "../../components/ui/Layout";
 import {
   MarketplaceGrid,
@@ -9,6 +9,7 @@ import {
 } from "../../components/common/LazyComponents";
 import FilterPanel from "../../components/marketplace/FilterPanel";
 import { Search, Filter } from "lucide-react";
+import { gsap, ScrollTrigger } from "../../lib/gsap";
 
 // Preload marketplace components when this module loads
 preloadMarketplaceComponents();
@@ -22,12 +23,34 @@ export default function Marketplace() {
     sortBy: "newest",
   });
   const [showFilters, setShowFilters] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const ctx = gsap.context(() => {
+      gsap.utils.toArray(el.querySelectorAll(".fade-section")).forEach((s) => {
+        gsap.from(s, {
+          opacity: 0,
+          y: 12,
+          duration: 0.4,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: s,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      });
+    }, el);
+    return () => ctx.revert();
+  }, []);
 
   return (
     <Layout>
-      <div className="min-h-screen">
+      <div ref={sectionRef} className="min-h-screen">
         {/* Header */}
-        <div className="glass-panel">
+        <div className="glass-panel fade-section">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center">
               <h1 className="text-3xl md:text-4xl font-bold text-emerald-200 mb-4">
@@ -42,7 +65,7 @@ export default function Marketplace() {
         </div>
 
         {/* Search and Filters */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 fade-section">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1 relative">
@@ -73,12 +96,12 @@ export default function Marketplace() {
         </div>
 
         {/* Debug Info */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6 fade-section">
           <MarketplaceDebug />
         </div>
 
         {/* NFT Grid */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 fade-section">
           <MarketplaceGrid
             searchTerm={searchTerm}
             filters={filters}

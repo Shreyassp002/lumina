@@ -8,8 +8,8 @@ const somniaTestnet = defineChain({
   name: 'Somnia Testnet',
   nativeCurrency: {
     decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
+    name: 'Somnia Test Token',
+    symbol: 'STT',
   },
   rpcUrls: {
     default: {
