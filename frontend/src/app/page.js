@@ -1,6 +1,7 @@
 "use client";
 
 import Layout from "../components/ui/Layout";
+import BrandingSection from "../components/ui/BrandingSection";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Zap, Shield, Users } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -185,6 +186,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Branding Section */}
+      <BrandingSection />
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-emerald-500 to-lime-500 text-black fade-section">
