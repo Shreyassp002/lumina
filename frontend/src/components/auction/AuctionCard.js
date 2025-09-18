@@ -13,7 +13,7 @@ import Link from "next/link";
 import { Clock, Gavel, Zap, ExternalLink } from "lucide-react";
 import { gsap } from "../../lib/gsap";
 
-export default function AuctionCard({ auction, currentUser }) {
+export default function AuctionCard({ auction, currentUser, onCardClick }) {
   const { address } = useAccount();
   const rootRef = useRef(null);
   const [bidAmount, setBidAmount] = useState("");
@@ -106,8 +106,26 @@ export default function AuctionCard({ auction, currentUser }) {
     );
   }
 
+  const handleCardClick = (e) => {
+    // Don't trigger modal if clicking on interactive elements
+    if (
+      e.target.closest("button") ||
+      e.target.closest("input") ||
+      e.target.closest("a")
+    ) {
+      return;
+    }
+    if (onCardClick) {
+      onCardClick(auction.tokenId, nftData);
+    }
+  };
+
   return (
-    <div ref={rootRef} className="glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300">
+    <div
+      ref={rootRef}
+      onClick={handleCardClick}
+      className="glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300 cursor-pointer"
+    >
       {/* Image */}
       <div className="aspect-square relative overflow-hidden max-w-[85%] mx-auto my-3 rounded-xl">
         {imageUrl ? (
@@ -123,12 +141,13 @@ export default function AuctionCard({ auction, currentUser }) {
         )}
         <div className="absolute top-3 left-3">
           <div
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${isActive
-              ? "bg-emerald-500 text-black"
-              : isEnded
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+              isActive
+                ? "bg-emerald-500 text-black"
+                : isEnded
                 ? "bg-[#0e1518] text-green-200/70"
                 : "bg-lime-500 text-black"
-              }`}
+            }`}
           >
             {isActive ? "Live" : isEnded ? "Ended" : "Upcoming"}
           </div>

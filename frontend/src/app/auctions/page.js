@@ -9,6 +9,7 @@ import {
   AuctionsDebug,
   preloadAuctionComponents,
 } from "../../components/common/LazyComponents";
+import NFTDetailsModal from "../../components/nft/NFTDetailsModal";
 import { Gavel, Clock, TrendingUp } from "lucide-react";
 import { gsap, ScrollTrigger } from "../../lib/gsap";
 import { formatEther } from "viem";
@@ -20,6 +21,9 @@ export default function AuctionsPage() {
   const { address } = useAccount();
   const [filter, setFilter] = useState("all"); // all, active, ending-soon, ended
   const { data: auctions = [], isLoading: loading } = useAllAuctions();
+  const [selectedTokenId, setSelectedTokenId] = useState(null);
+  const [selectedNFTData, setSelectedNFTData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredAuctions = auctions.filter((auction) => {
     const now = Date.now();
@@ -54,6 +58,20 @@ export default function AuctionsPage() {
   }, 0n);
 
   const sectionRef = useRef(null);
+
+  // Handle card click to open modal
+  const handleCardClick = (tokenId, nftData) => {
+    setSelectedTokenId(tokenId);
+    setSelectedNFTData(nftData);
+    setIsModalOpen(true);
+  };
+
+  // Handle modal close
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTokenId(null);
+    setSelectedNFTData(null);
+  };
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -175,10 +193,11 @@ export default function AuctionsPage() {
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${filter === tab.key
-                  ? "bg-[#0e1518] text-emerald-300 accent-ring"
-                  : "text-green-200/70 hover:text-emerald-200"
-                  }`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  filter === tab.key
+                    ? "bg-[#0e1518] text-emerald-300 accent-ring"
+                    : "text-green-200/70 hover:text-emerald-200"
+                }`}
               >
                 {tab.label}
               </button>
@@ -205,11 +224,20 @@ export default function AuctionsPage() {
                   key={auction.id}
                   auction={auction}
                   currentUser={address}
+                  onCardClick={handleCardClick}
                 />
               ))}
             </div>
           )}
         </div>
+
+        {/* NFT Details Modal */}
+        <NFTDetailsModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          tokenId={selectedTokenId}
+          initialData={selectedNFTData}
+        />
       </div>
     </Layout>
   );

@@ -16,6 +16,7 @@ export default function NFTCard({
   listingId,
   isOptimistic = false,
   refCallback,
+  onCardClick,
 }) {
   const { address } = useAccount();
   const [isLiked, setIsLiked] = useState(false);
@@ -85,10 +86,21 @@ export default function NFTCard({
     );
   }
 
+  const handleCardClick = (e) => {
+    // Don't trigger modal if clicking on interactive elements
+    if (e.target.closest("button") || e.target.closest("a")) {
+      return;
+    }
+    if (onCardClick) {
+      onCardClick(tokenId, nftData);
+    }
+  };
+
   return (
     <div
       ref={rootRef}
-      className={`glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300 group ${
+      onClick={handleCardClick}
+      className={`glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300 group cursor-pointer ${
         isOptimistic ? "opacity-75 border border-emerald-400/50" : ""
       }`}
     >

@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useAccount } from "wagmi";
 import { useInfiniteMarketplaceListings } from "../../hooks/useMarketplace";
 import NFTCard from "../nft/NFTCard";
+import NFTDetailsModal from "../nft/NFTDetailsModal";
 import { Loader2, RefreshCw, Search, Filter } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
@@ -99,6 +100,9 @@ export default function MarketplaceGrid({
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [selectedTokenId, setSelectedTokenId] = useState(null);
+  const [selectedNFTData, setSelectedNFTData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Debounce search term to avoid excessive filtering
   useEffect(() => {
@@ -154,6 +158,20 @@ export default function MarketplaceGrid({
   // Handle search input change
   const handleSearchChange = useCallback((e) => {
     setLocalSearchTerm(e.target.value);
+  }, []);
+
+  // Handle card click to open modal
+  const handleCardClick = useCallback((tokenId, nftData) => {
+    setSelectedTokenId(tokenId);
+    setSelectedNFTData(nftData);
+    setIsModalOpen(true);
+  }, []);
+
+  // Handle modal close
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedTokenId(null);
+    setSelectedNFTData(null);
   }, []);
 
   // Loading state for initial load
@@ -285,6 +303,7 @@ export default function MarketplaceGrid({
             seller={listing.seller}
             listingId={listing.listingId}
             isOptimistic={listing.isOptimistic}
+            onCardClick={handleCardClick}
           />
         ))}
       </div>
@@ -311,6 +330,14 @@ export default function MarketplaceGrid({
           </div>
         </div>
       )}
+
+      {/* NFT Details Modal */}
+      <NFTDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        tokenId={selectedTokenId}
+        initialData={selectedNFTData}
+      />
     </div>
   );
 }

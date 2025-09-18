@@ -4,10 +4,14 @@ import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useInfiniteMarketplaceListings } from "../../hooks/useMarketplace";
 import NFTCard from "./NFTCard";
+import NFTDetailsModal from "./NFTDetailsModal";
 import { Loader2, RefreshCw } from "lucide-react";
 
 export default function NFTGrid({ searchTerm, filters }) {
   const { address } = useAccount();
+  const [selectedTokenId, setSelectedTokenId] = useState(null);
+  const [selectedNFTData, setSelectedNFTData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Use infinite marketplace listings hook
   const { data, isLoading, refetch, fetchNextPage, hasNextPage } =
@@ -74,6 +78,18 @@ export default function NFTGrid({ searchTerm, filters }) {
     );
   }
 
+  const handleCardClick = (tokenId, nftData) => {
+    setSelectedTokenId(tokenId);
+    setSelectedNFTData(nftData);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTokenId(null);
+    setSelectedNFTData(null);
+  };
+
   return (
     <div>
       {/* Refresh Button */}
@@ -101,9 +117,18 @@ export default function NFTGrid({ searchTerm, filters }) {
             price={listing.priceWei}
             seller={listing.seller}
             listingId={listing.listingId}
+            onCardClick={handleCardClick}
           />
         ))}
       </div>
+
+      {/* NFT Details Modal */}
+      <NFTDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        tokenId={selectedTokenId}
+        initialData={selectedNFTData}
+      />
 
       {/* Load More Button */}
       {hasNextPage && (
