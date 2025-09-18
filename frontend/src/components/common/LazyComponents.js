@@ -19,12 +19,6 @@ export const LazyMarketplaceGrid = lazy(() =>
   }))
 );
 
-export const LazyMarketplaceDebug = lazy(() =>
-  import("../marketplace/MarketplaceDebug").then((module) => ({
-    default: module.default,
-  }))
-);
-
 // Lazy load NFT components
 export const LazyNFTGridAdvanced = lazy(() =>
   import("../nft/NFTGridAdvanced").then((module) => ({
@@ -44,14 +38,6 @@ export const LazyAuctionCard = lazy(() =>
     default: module.default,
   }))
 );
-
-export const LazyAuctionsDebug = lazy(() =>
-  import("../auction/AuctionsDebug").then((module) => ({
-    default: module.default,
-  }))
-);
-
-// Performance and offline components removed - no longer needed
 
 // Lazy load modal components (only needed when opened)
 export const LazyNFTActionModal = lazy(() =>
@@ -77,11 +63,6 @@ export const MarketplaceGrid = withLazyLoading(
   "Loading marketplace..."
 );
 
-export const MarketplaceDebug = withLazyLoading(
-  LazyMarketplaceDebug,
-  "Loading debug info..."
-);
-
 export const NFTGridAdvanced = withLazyLoading(
   LazyNFTGridAdvanced,
   "Loading NFTs..."
@@ -94,13 +75,6 @@ export const AuctionCard = withLazyLoading(
   "Loading auction..."
 );
 
-export const AuctionsDebug = withLazyLoading(
-  LazyAuctionsDebug,
-  "Loading debug info..."
-);
-
-// Performance and offline components removed
-
 export const NFTActionModal = withLazyLoading(
   LazyNFTActionModal,
   "Loading modal..."
@@ -110,13 +84,11 @@ export const NFTActionModal = withLazyLoading(
 export const preloadMarketplaceComponents = () => {
   // Preload marketplace components when user is likely to navigate there
   import("../marketplace/MarketplaceGrid");
-  import("../marketplace/MarketplaceDebug");
 };
 
 export const preloadAuctionComponents = () => {
   // Preload auction components when user is likely to navigate there
   import("../auction/AuctionCard");
-  import("../auction/AuctionsDebug");
 };
 
 export const preloadNFTComponents = () => {

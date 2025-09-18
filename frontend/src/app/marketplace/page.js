@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import Layout from "../../components/ui/Layout";
 import {
   MarketplaceGrid,
-  MarketplaceDebug,
   preloadMarketplaceComponents,
 } from "../../components/common/LazyComponents";
 import FilterPanel from "../../components/marketplace/FilterPanel";
@@ -93,11 +92,6 @@ export default function Marketplace() {
           <div className={`mt-6 ${showFilters ? "block" : "hidden lg:block"}`}>
             <FilterPanel filters={filters} onFiltersChange={setFilters} />
           </div>
-        </div>
-
-        {/* Debug Info */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6 fade-section">
-          <MarketplaceDebug />
         </div>
 
         {/* NFT Grid */}

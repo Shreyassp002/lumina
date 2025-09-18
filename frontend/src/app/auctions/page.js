@@ -6,7 +6,6 @@ import { useAllAuctions } from "../../hooks/useAuction";
 import Layout from "../../components/ui/Layout";
 import {
   AuctionCard,
-  AuctionsDebug,
   preloadAuctionComponents,
 } from "../../components/common/LazyComponents";
 import NFTDetailsModal from "../../components/nft/NFTDetailsModal";
@@ -123,11 +122,6 @@ export default function AuctionsPage() {
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Debug */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 fade-section">
-          <AuctionsDebug />
         </div>
 
         {/* Stats */}
