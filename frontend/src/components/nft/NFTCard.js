@@ -71,8 +71,7 @@ export default function NFTCard({
     if (!el) return;
     // Provide element to parent for list-level stagger
     if (typeof refCallback === "function") refCallback(el);
-    gsap.from(el, { opacity: 0, y: 8, duration: 0.3, ease: "power2.out" });
-  }, []);
+  }, [refCallback]);
 
   if (nftLoading) {
     return (
@@ -89,8 +88,9 @@ export default function NFTCard({
   return (
     <div
       ref={rootRef}
-      className={`glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300 group ${isOptimistic ? "opacity-75 border border-emerald-400/50" : ""
-        }`}
+      className={`glass-panel rounded-2xl overflow-hidden hover:neon-glow transition-shadow duration-300 group ${
+        isOptimistic ? "opacity-75 border border-emerald-400/50" : ""
+      }`}
     >
       {/* Image */}
       <div className="aspect-square relative overflow-hidden">
@@ -108,10 +108,11 @@ export default function NFTCard({
         <div className="absolute top-3 right-3">
           <button
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full backdrop-blur-sm transition-colors cursor-pointer ${isLiked
-              ? "bg-emerald-500 text-black"
-              : "bg-[#0e1518]/80 text-emerald-200 hover:bg-[#0e1518]"
-              }`}
+            className={`p-2 rounded-full backdrop-blur-sm transition-colors cursor-pointer ${
+              isLiked
+                ? "bg-emerald-500 text-black"
+                : "bg-[#0e1518]/80 text-emerald-200 hover:bg-[#0e1518]"
+            }`}
           >
             <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
           </button>
@@ -156,9 +157,9 @@ export default function NFTCard({
           <span className="text-sm text-green-200/70 truncate">
             {nftData?.tokenData?.creator
               ? `${nftData.tokenData.creator.slice(
-                0,
-                6
-              )}...${nftData.tokenData.creator.slice(-4)}`
+                  0,
+                  6
+                )}...${nftData.tokenData.creator.slice(-4)}`
               : "Unknown"}
           </span>
         </div>

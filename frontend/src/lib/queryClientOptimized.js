@@ -105,13 +105,14 @@ export const cacheStrategies = {
     refetchOnReconnect: false,
   },
 
-  // Marketplace listings - optimized for frequent updates with background refresh
+  // Marketplace listings - no caching to prevent stale data issues
   marketplaceListings: {
-    staleTime: 2 * 60 * 1000, // 2 minutes (reduced for fresher data)
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache data
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    refetchInterval: 5 * 60 * 1000, // Background refresh every 5 minutes
+    refetchOnMount: true, // Always refetch when component mounts
+    cacheTime: 0, // Legacy support - no caching
   },
 
   // Auction data - very short cache with aggressive refresh for real-time updates
