@@ -6,6 +6,9 @@ require("hardhat-gas-reporter")
 require("hardhat-contract-sizer")
 require("dotenv").config()
 
+// Load admin tasks
+require("./scripts/admin-tasks")
+
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL
 const SOMNIA_TESTNET_RPC_URL = process.env.SOMNIA_TESTNET_RPC_URL
 const SEPOLIA_PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY
