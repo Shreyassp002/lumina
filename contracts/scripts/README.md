@@ -2,6 +2,25 @@
 
 This directory contains administrative scripts for managing the Lumina NFT marketplace platform contracts.
 
+## 🚀 Quick Start - Most Used Commands
+
+```bash
+# Check platform status
+npx hardhat admin:status --network somniaTestnet
+
+# Check for auctions needing settlement
+npx hardhat admin:check-auctions --network somniaTestnet
+
+# Settle all expired auctions
+npx hardhat admin:settle-all --network somniaTestnet
+
+# Verify a creator
+npx hardhat admin:verify-creator --address 0x1234... --network somniaTestnet
+
+# Withdraw all platform fees
+npx hardhat admin:withdraw-all --network somniaTestnet
+```
+
 ## Available Scripts
 
 ### 1. Interactive Admin Script (`admin-functions.js`)
@@ -19,20 +38,20 @@ npx hardhat run scripts/admin-functions.js --network somniaTestnet
 - Input validation and error handling
 - Comprehensive auction management
 
-### 2. Quick Admin Script (`quick-admin.js`)
+### 2. Hardhat Admin Tasks (Recommended)
 
-Command-line interface for quick admin actions without interactive menus.
+Built-in Hardhat tasks for all admin functions with proper parameter handling.
 
 ```bash
-# Show usage
-npx hardhat run scripts/quick-admin.js --network somniaTestnet
+# Show all available admin tasks
+npx hardhat --help | grep admin
 
-# Examples
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- status
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- verify-creator 0x1234...
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- set-mint-fee 0.002
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- settle-auction 1
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- withdraw-all
+# Working examples
+npx hardhat admin:status --network somniaTestnet
+npx hardhat admin:verify-creator --address 0x1234... --network somniaTestnet
+npx hardhat admin:set-mint-fee --fee 0.002 --network somniaTestnet
+npx hardhat admin:settle-auction --id 1 --network somniaTestnet
+npx hardhat admin:withdraw-all --network somniaTestnet
 ```
 
 ### 3. Auction Settlement Bot (`settle-auctions.js`)
@@ -49,6 +68,46 @@ npx hardhat run scripts/settle-auctions.js --network somniaTestnet
 - Detailed logging and error handling
 - Gas optimization
 - Suitable for automation
+
+## 📋 Complete List of Hardhat Admin Tasks
+
+### Status & Monitoring
+
+```bash
+npx hardhat admin:status --network somniaTestnet
+npx hardhat admin:check-auctions --network somniaTestnet
+```
+
+### Auction Management
+
+```bash
+npx hardhat admin:settle-auction --id <auction_id> --network somniaTestnet
+npx hardhat admin:settle-all --network somniaTestnet
+```
+
+### Creator Management
+
+```bash
+npx hardhat admin:verify-creator --address <creator_address> --network somniaTestnet
+```
+
+### Fee Management
+
+```bash
+npx hardhat admin:set-mint-fee --fee <eth_amount> --network somniaTestnet
+npx hardhat admin:withdraw-all --network somniaTestnet
+```
+
+### Emergency Controls
+
+```bash
+npx hardhat admin:pause-nft --network somniaTestnet
+npx hardhat admin:unpause-nft --network somniaTestnet
+npx hardhat admin:pause-auction --network somniaTestnet
+npx hardhat admin:unpause-auction --network somniaTestnet
+npx hardhat admin:pause-marketplace --network somniaTestnet
+npx hardhat admin:unpause-marketplace --network somniaTestnet
+```
 
 ## Contract Addresses
 
@@ -146,16 +205,17 @@ ADMIN_ACTION=settle-all npx hardhat run scripts/simple-admin.js --network somnia
 1. **Pause All Contracts**
 
 ```bash
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- pause-nft
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- pause-auction
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- pause-marketplace
+npx hardhat admin:pause-nft --network somniaTestnet
+npx hardhat admin:pause-auction --network somniaTestnet
+npx hardhat admin:pause-marketplace --network somniaTestnet
 ```
 
 2. **Unpause All Contracts**
 
 ```bash
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- unpause-nft
-npx hardhat run scripts/quick-admin.js --network somniaTestnet -- unpause-auction
+npx hardhat admin:unpause-nft --network somniaTestnet
+npx hardhat admin:unpause-auction --network somniaTestnet
+npx hardhat admin:unpause-marketplace --network somniaTestnet
 npx hardhat run scripts/quick-admin.js --network somniaTestnet -- unpause-marketplace
 ```
 
