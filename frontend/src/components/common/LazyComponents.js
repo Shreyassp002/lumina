@@ -20,12 +20,6 @@ export const LazyMarketplaceGrid = lazy(() =>
 );
 
 // Lazy load NFT components
-export const LazyNFTGridAdvanced = lazy(() =>
-  import("../nft/NFTGridAdvanced").then((module) => ({
-    default: module.default,
-  }))
-);
-
 export const LazyNFTCard = lazy(() =>
   import("../nft/NFTCard").then((module) => ({
     default: module.default,
@@ -63,11 +57,6 @@ export const MarketplaceGrid = withLazyLoading(
   "Loading marketplace..."
 );
 
-export const NFTGridAdvanced = withLazyLoading(
-  LazyNFTGridAdvanced,
-  "Loading NFTs..."
-);
-
 export const NFTCard = withLazyLoading(LazyNFTCard, "Loading NFT...");
 
 export const AuctionCard = withLazyLoading(
@@ -93,7 +82,6 @@ export const preloadAuctionComponents = () => {
 
 export const preloadNFTComponents = () => {
   // Preload NFT components when user is likely to need them
-  import("../nft/NFTGridAdvanced");
   import("../nft/NFTCard");
 };
 
