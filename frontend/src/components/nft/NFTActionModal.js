@@ -150,8 +150,14 @@ export default function NFTActionModal({
   if (!isOpen) return null;
 
   return (
-    <div ref={overlayRef} className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div ref={modalRef} className="glass-panel rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        ref={modalRef}
+        className="glass-panel rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[#133027]">
           <div className="flex items-center space-x-3">
@@ -250,8 +256,9 @@ export default function NFTActionModal({
                   value={formData.price}
                   onChange={(e) => handleInputChange("price", e.target.value)}
                   placeholder="0.1"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.price ? "border-red-300" : "border-gray-300"
-                    }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    errors.price ? "border-red-300" : "border-gray-300"
+                  }`}
                 />
                 <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
                   STT
@@ -278,8 +285,9 @@ export default function NFTActionModal({
                       handleInputChange("startPrice", e.target.value)
                     }
                     placeholder="0.1"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.startPrice ? "border-red-300" : "border-gray-300"
-                      }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                      errors.startPrice ? "border-red-300" : "border-gray-300"
+                    }`}
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
                     STT
@@ -306,8 +314,9 @@ export default function NFTActionModal({
                     handleInputChange("duration", e.target.value)
                   }
                   placeholder="24"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.duration ? "border-red-300" : "border-gray-300"
-                    }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    errors.duration ? "border-red-300" : "border-gray-300"
+                  }`}
                 />
                 {errors.duration && (
                   <p className="text-red-400 text-sm mt-1">{errors.duration}</p>
@@ -358,8 +367,9 @@ export default function NFTActionModal({
                       handleInputChange("buyNowPrice", e.target.value)
                     }
                     placeholder="1.0"
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.buyNowPrice ? "border-red-300" : "border-gray-300"
-                      }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                      errors.buyNowPrice ? "border-red-300" : "border-gray-300"
+                    }`}
                   />
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-200/70">
                     STT
