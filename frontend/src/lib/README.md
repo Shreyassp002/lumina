@@ -94,7 +94,7 @@ All query keys follow a consistent pattern:
 - `['auctions', 'userAuctions', address]` - User's auctions
 - `['user', 'profile', address]` - User profile data
 
-### 🔄 Smart Cache Invalidation
+### Smart Cache Invalidation
 
 Automatic invalidation based on transaction types:
 

@@ -4,49 +4,54 @@ A modern, responsive frontend for the Lumina NFT Marketplace built with Next.js,
 
 ## Features
 
-- 🎨 **Modern UI/UX**: Beautiful, responsive design with smooth animations
-- 🔗 **Web3 Integration**: Wallet connection with RainbowKit and Wagmi
-- 🖼️ **NFT Marketplace**: Browse, buy, and sell NFTs
-- ⚡ **Auction System**: Real-time bidding with anti-sniping protection
-- 🎯 **NFT Creation**: Easy minting interface with IPFS integration
-- 👤 **User Profiles**: Personal dashboards and activity tracking
-- 📱 **Mobile Responsive**: Optimized for all device sizes
+- **Modern UI/UX**: Beautiful, responsive design with smooth animations
+- **Web3 Integration**: Wallet connection with RainbowKit and Wagmi
+- **NFT Marketplace**: Browse, buy, and sell NFTs
+- **Auction System**: Real-time bidding with anti-sniping protection
+- **NFT Creation**: Easy minting interface with IPFS integration
+- **User Profiles**: Personal dashboards and activity tracking
+- **Mobile Responsive**: Optimized for all device sizes
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 15 with App Router and Turbopack
 - **Styling**: Tailwind CSS 4
 - **Web3**: Wagmi v2, RainbowKit, Viem
 - **Icons**: Lucide React
-- **Animations**: GSAP
-- **State Management**: React Query (TanStack Query)
+- **Animations**: GSAP with React integration
+- **State Management**: TanStack Query (React Query)
+- **Testing**: Vitest with React Testing Library
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - WalletConnect Project ID
 
 ### Installation
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 3. Add your WalletConnect Project ID to `.env.local`:
+
 ```
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id_here
 ```
 
 4. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -56,29 +61,22 @@ npm run dev
 ## Project Structure
 
 ```
-src/
-├── app/                    # Next.js App Router pages
-│   ├── page.js            # Homepage
-│   ├── marketplace/       # Marketplace page
-│   ├── create/           # NFT creation page
-│   ├── auctions/         # Auctions page
-│   └── profile/          # User profile page
-├── components/           # Reusable UI components
-│   ├── Layout.js         # Main layout wrapper
-│   ├── Header.js         # Navigation header
-│   ├── Footer.js         # Footer component
-│   ├── NFTGrid.js        # NFT grid display
-│   ├── NFTCard.js        # Individual NFT card
-│   ├── AuctionCard.js    # Auction display card
-│   └── FilterPanel.js    # Marketplace filters
-├── lib/                  # Utility libraries
-│   └── wagmi.js          # Wagmi configuration
-├── providers/            # React context providers
-│   └── Web3Provider.js   # Web3 provider wrapper
-└── abi/                  # Smart contract ABIs
-    ├── luminaNft.js      # NFT contract ABI
-    ├── luminaMarketplace.js # Marketplace contract ABI
-    └── luminaAuction.js  # Auction contract ABI
+frontend/
+├── src/
+│   ├── app/              # Next.js App Router pages
+│   ├── components/       # Reusable UI components
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utility libraries
+│   ├── providers/       # React context providers
+│   └── test/            # Test utilities
+├── abi/                 # Smart contract ABIs
+│   ├── luminaNft.js     # NFT contract ABI
+│   ├── luminaMarketplace.js # Marketplace contract ABI
+│   └── luminaAuction.js # Auction contract ABI
+├── public/              # Static assets
+│   └── logo/           # Brand logos
+├── scripts/            # Build and utility scripts
+└── package.json        # Dependencies and scripts
 ```
 
 ## Smart Contract Integration
@@ -94,30 +92,35 @@ Contract addresses are configured in the ABI files and point to the deployed con
 ## Key Features
 
 ### Homepage
+
 - Hero section with call-to-action
 - Feature highlights
 - Statistics display
 - Responsive design
 
 ### Marketplace
+
 - NFT grid with filtering and search
 - Real-time price updates
 - Instant purchase functionality
 - Creator verification badges
 
 ### Auctions
+
 - Live auction display with countdown timers
 - Real-time bidding interface
 - Anti-sniping protection
 - Buy-now functionality
 
 ### NFT Creation
+
 - Drag-and-drop image upload
 - Metadata form with validation
 - Royalty configuration
 - Batch minting support
 
 ### User Profile
+
 - Personal dashboard
 - NFT collection management
 - Activity history
@@ -136,19 +139,23 @@ The project uses Tailwind CSS with custom utilities:
 
 The app is configured for Somnia testnet:
 
-- **Chain ID**: 50311
-- **RPC URL**: https://rpc.somnia.network
-- **Currency**: ETH
-- **Block Explorer**: https://explorer.somnia.network
+- **Chain ID**: 50312
+- **RPC URL**: https://dream-rpc.somnia.network
+- **Currency**: STT
+- **Block Explorer**: https://shannon-explorer.somnia.network/
 
 ## Development
 
 ### Available Scripts
 
-- `npm run dev`: Start development server
-- `npm run build`: Build for production
+- `npm run dev`: Start development server with Turbopack
+- `npm run build`: Build for production with Turbopack
+- `npm run build:analyze`: Build with bundle analysis
+- `npm run analyze`: Analyze bundle size
 - `npm run start`: Start production server
 - `npm run lint`: Run ESLint
+- `npm run test`: Run tests with Vitest
+- `npm run test:run`: Run tests once
 
 ### Code Style
 
@@ -180,3 +187,7 @@ Make sure to set the environment variables in your deployment platform.
 ## License
 
 This project is part of the Lumina NFT Marketplace ecosystem.
+
+---
+
+Built with ❤️ for the Somnia Network ecosystem

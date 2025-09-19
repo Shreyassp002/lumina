@@ -48,12 +48,10 @@ npm run test:deployment:somnia
 
 ## Supported Networks
 
-| Network        | Command                        | Chain ID | RPC URL                          |
-| -------------- | ------------------------------ | -------- | -------------------------------- |
-| Somnia Testnet | `npm run deploy:somnia`        | 50311    | https://dream-rpc.somnia.network |
-| Somnia Devnet  | `npm run deploy:somnia-devnet` | 50311    | https://dream-rpc.somnia.network |
-| Sepolia        | `npm run deploy:sepolia`       | 11155111 | Alchemy RPC                      |
-| Local          | `npm run deploy:local`         | 31337    | localhost:8545                   |
+| Network        | Command                 | Chain ID | RPC URL                          |
+| -------------- | ----------------------- | -------- | -------------------------------- |
+| Somnia Testnet | `npm run deploy:somnia` | 50312    | https://dream-rpc.somnia.network |
+| Local          | `npm run deploy:local`  | 31337    | localhost:8545                   |
 
 ## Contract Sizes
 
@@ -73,8 +71,7 @@ Create a `.env` file with:
 
 ```bash
 SOMNIA_TESTNET_RPC_URL="https://dream-rpc.somnia.network"
-SEPOLIA_RPC_URL="your_sepolia_rpc_url"
-PRIVATE_KEY="your_private_key"
+SOMNIA_PRIVATE_KEY="your_somnia_private_key"
 ETHERSCAN_API_KEY="your_etherscan_api_key"
 ```
 
@@ -84,9 +81,9 @@ Add Somnia Testnet to MetaMask:
 
 - Network Name: `Somnia Testnet`
 - RPC URL: `https://dream-rpc.somnia.network`
-- Chain ID: `50311`
-- Currency: `STM`
-- Explorer: `https://somnia-devnet.socialscan.io/`
+- Chain ID: `50312`
+- Currency: `STT`
+- Explorer: `https://shannon-explorer.somnia.network/`
 
 ## Available Scripts
 
@@ -100,13 +97,11 @@ Add Somnia Testnet to MetaMask:
 ### Deployment
 
 - `npm run deploy:somnia` - Deploy to Somnia testnet
-- `npm run deploy:sepolia` - Deploy to Sepolia testnet
 - `npm run deploy:local` - Deploy to local network
 
 ### Testing
 
 - `npm run test:deployment:somnia` - Test Somnia deployment
-- `npm run test:deployment:sepolia` - Test Sepolia deployment
 
 ### Code Quality
 
@@ -164,13 +159,16 @@ contracts/
 │   ├── LuminaNFT.sol           # Core NFT contract
 │   ├── LuminaAuction.sol       # Auction system
 │   └── LuminaMarketplace.sol   # Marketplace contract
-├── scripts/
-│   ├── deploy-somnia.js        # Deployment script
-│   └── test-deployment.js      # Deployment test
+├── deploy/                     # Hardhat deploy scripts
+│   ├── 01-lumina-nft-deploy.js
+│   ├── 02-lumina-auction-deploy.js
+│   ├── 03-lumina-marketplace-deploy.js
+│   └── 04-setup-contracts.js
+├── scripts/                    # Admin and utility scripts
+├── test/                       # Contract tests
 ├── deployments/                # Deployment artifacts
 ├── hardhat.config.js          # Hardhat configuration
-├── helper-hardhat-config.js   # Network helpers
-└── SOMNIA_SETUP.md            # Somnia setup guide
+└── helper-hardhat-config.js   # Network helpers
 ```
 
 ## 🛡️ Security Features

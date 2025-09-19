@@ -111,7 +111,6 @@ npx hardhat admin:settle-all --network somniaTestnet
 
 5. **Withdraw All Platform Fees**
 
-
 ```bash
 npx hardhat admin:withdraw-all --network somniaTestnet
 ```
