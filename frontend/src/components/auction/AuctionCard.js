@@ -16,6 +16,7 @@ import { gsap } from "../../lib/gsap";
 export default function AuctionCard({ auction, currentUser, onCardClick }) {
   const { address } = useAccount();
   const rootRef = useRef(null);
+  const gsapContextRef = useRef(null);
   const [bidAmount, setBidAmount] = useState("");
   const [isBidding, setIsBidding] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
@@ -88,7 +89,45 @@ export default function AuctionCard({ auction, currentUser, onCardClick }) {
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
-    gsap.from(el, { opacity: 0, y: 8, duration: 0.3, ease: "power2.out" });
+
+    // Clean up previous context if it exists
+    if (gsapContextRef.current) {
+      gsapContextRef.current.revert();
+    }
+
+    // Create GSAP context for proper cleanup
+    const ctx = gsap.context(() => {
+      // Reset any existing transforms/opacity
+      gsap.set(el, { opacity: 1, y: 0, clearProps: "all" });
+
+      // Small delay to ensure DOM is ready
+      gsap.delayedCall(0.05, () => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+        );
+      });
+    }, el);
+
+    gsapContextRef.current = ctx;
+
+    return () => {
+      if (gsapContextRef.current) {
+        gsapContextRef.current.revert();
+        gsapContextRef.current = null;
+      }
+    };
+  }, [auction.id]); // Re-run when auction changes
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (gsapContextRef.current) {
+        gsapContextRef.current.revert();
+        gsapContextRef.current = null;
+      }
+    };
   }, []);
 
   // Show loading state while NFT data is loading

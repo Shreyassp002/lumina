@@ -208,29 +208,6 @@ export default function MarketplaceGrid({
   if (processedListings.length === 0 && !isLoading) {
     return (
       <div className="space-y-6">
-        {/* Search Bar */}
-        <div className="flex items-center space-x-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-200/70 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search by token ID or seller address..."
-              value={localSearchTerm}
-              onChange={handleSearchChange}
-              className="w-full pl-10 pr-4 py-3 glass-panel rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
-            />
-          </div>
-          <button
-            onClick={handleRefresh}
-            disabled={isLoading}
-            className="flex items-center px-4 py-3 glass-panel rounded-lg hover:neon-glow transition-colors disabled:opacity-50"
-          >
-            <RefreshCw
-              className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
-            />
-          </button>
-        </div>
-
         {/* Empty State */}
         <div className="text-center py-12">
           <div className="text-green-200/70 text-lg mb-4">No NFTs found</div>
@@ -247,25 +224,6 @@ export default function MarketplaceGrid({
   return (
     <div className="space-y-6">
       {/* Search and Controls */}
-      <div className="flex items-center space-x-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-200/70 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Search by token ID or seller address..."
-            value={localSearchTerm}
-            onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-3 glass-panel rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
-          />
-        </div>
-        <button
-          onClick={handleRefresh}
-          disabled={isLoading}
-          className="flex items-center px-4 py-3 glass-panel rounded-lg hover:neon-glow transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
-        </button>
-      </div>
 
       {/* Results Header */}
       <div className="flex justify-between items-center">

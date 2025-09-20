@@ -66,18 +66,6 @@ export default function Marketplace() {
         {/* Search and Filters */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 fade-section">
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-200/70 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search NFTs, creators, or categories..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 glass-panel rounded-lg focus:outline-none"
-              />
-            </div>
-
             {/* Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}

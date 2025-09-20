@@ -75,23 +75,39 @@ export default function AuctionsPage() {
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
+
     const ctx = gsap.context(() => {
+      // Clear any existing properties first
+      gsap.set(el.querySelectorAll(".fade-section"), { clearProps: "all" });
+
       gsap.utils.toArray(el.querySelectorAll(".fade-section")).forEach((s) => {
-        gsap.from(s, {
-          opacity: 0,
-          y: 12,
-          duration: 0.4,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: s,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
+        gsap.fromTo(
+          s,
+          {
+            opacity: 0,
+            y: 12,
           },
-        });
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: s,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+              refreshPriority: -1, // Lower priority to avoid conflicts
+            },
+          }
+        );
       });
     }, el);
-    return () => ctx.revert();
-  }, []);
+
+    return () => {
+      ctx.revert();
+      ScrollTrigger.refresh(); // Refresh ScrollTrigger after cleanup
+    };
+  }, [filteredAuctions.length]); // Re-run when auction list changes
 
   if (loading) {
     return (
@@ -215,7 +231,7 @@ export default function AuctionsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-section">
               {filteredAuctions.map((auction) => (
                 <AuctionCard
-                  key={auction.id}
+                  key={`${auction.id}-${auction.tokenId}-${filter}`}
                   auction={auction}
                   currentUser={address}
                   onCardClick={handleCardClick}
