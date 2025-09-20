@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { gsap } from "../../lib/gsap";
 import { useAccount } from "wagmi";
 import { useNFTData } from "../../hooks/useNFT";
 import { useBuyNFT } from "../../hooks/useMarketplace";
@@ -26,17 +25,10 @@ export default function NFTCard({
   const rootRef = useRef(null);
 
   // Use hook for contract interactions
-  const {
-    data: nftData,
-    isLoading: nftLoading,
-    error: nftError,
-  } = useNFTData(tokenId, { includeMetadata: true });
-  const {
-    buyNFT,
-    isPending: isPurchasing,
-    isConfirming,
-    isConfirmed,
-  } = useBuyNFT();
+  const { data: nftData, isLoading: nftLoading } = useNFTData(tokenId, {
+    includeMetadata: true,
+  });
+  const { buyNFT, isPending: isPurchasing, isConfirming } = useBuyNFT();
 
   // Resolve ipfs:// to https
   const resolveIpfs = (uri) => {
@@ -160,19 +152,17 @@ export default function NFTCard({
         </div>
 
         <p className="text-sm text-green-200/70 mb-3 line-clamp-2">
-          {metadata?.category || nftData?.tokenData?.category || "Digital Art"}
+          {metadata?.category ||
+            metadata?.attributes?.find((attr) => attr.trait_type === "Category")
+              ?.value ||
+            "Digital Art"}
         </p>
 
-        {/* Creator */}
+        {/* Owner */}
         <div className="flex items-center mb-3">
           <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-lime-500 rounded-full mr-2"></div>
           <span className="text-sm text-green-200/70 truncate">
-            {nftData?.tokenData?.creator
-              ? `${nftData.tokenData.creator.slice(
-                  0,
-                  6
-                )}...${nftData.tokenData.creator.slice(-4)}`
-              : "Unknown"}
+            {seller ? `${seller.slice(0, 6)}...${seller.slice(-4)}` : "Unknown"}
           </span>
         </div>
 

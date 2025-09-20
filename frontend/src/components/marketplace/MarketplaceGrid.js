@@ -73,16 +73,16 @@ const sortListings = (listings, sortBy) => {
     case "newest":
       return sorted.sort((a, b) => {
         // Sort by listing ID (newer listings have higher IDs)
-        const idA = a.listingId || 0;
-        const idB = b.listingId || 0;
-        return idB - idA;
+        const idA = a.listingId || BigInt(0);
+        const idB = b.listingId || BigInt(0);
+        return idB > idA ? 1 : idB < idA ? -1 : 0;
       });
 
     case "oldest":
       return sorted.sort((a, b) => {
-        const idA = a.listingId || 0;
-        const idB = b.listingId || 0;
-        return idA - idB;
+        const idA = a.listingId || BigInt(0);
+        const idB = b.listingId || BigInt(0);
+        return idA > idB ? 1 : idA < idB ? -1 : 0;
       });
 
     default:
