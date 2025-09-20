@@ -90,8 +90,8 @@ Lumina Platform
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/lumina-nft-marketplace
-cd lumina-nft-marketplace
+git clone https://github.com/Shreyassp002/lumina
+cd lumina
 ```
 
 ### 2. Smart Contracts Setup
